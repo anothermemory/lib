@@ -23,11 +23,11 @@ func TestList_AddItem(t *testing.T) {
 	assert.Empty(t, u.Items())
 	assert.Len(t, u.Items(), 0)
 
-	u.AddItem(unit.Unit(c1))
+	u.AddItem(c1)
 	assert.NotEmpty(t, u.Items())
 	assert.Len(t, u.Items(), 1)
 
-	u.AddItem(unit.Unit(c2))
+	u.AddItem(c2)
 	assert.Len(t, u.Items(), 2)
 }
 
@@ -36,8 +36,8 @@ func TestList_GetItem(t *testing.T) {
 	c1 := unit.NewTextPlain("MyText", "abc")
 	c2 := unit.NewTextCode("MyCode", "def", "PHP")
 
-	u.AddItem(unit.Unit(c1))
-	u.AddItem(unit.Unit(c2))
+	u.AddItem(c1)
+	u.AddItem(c2)
 
 	tmp := u.GetItem(0)
 	i1, ok := tmp.(unit.TextPlain)
@@ -58,7 +58,7 @@ func TestList_SetItem(t *testing.T) {
 	c1 := unit.NewTextPlain("MyText", "abc")
 	c2 := unit.NewTextCode("MyCode", "def", "PHP")
 
-	u.AddItem(unit.Unit(c1))
+	u.AddItem(c1)
 
 	tmp := u.GetItem(0)
 	i1, ok := tmp.(unit.TextPlain)
@@ -83,8 +83,8 @@ func TestList_RemoveItem(t *testing.T) {
 	assert.Empty(t, u.Items())
 	assert.Len(t, u.Items(), 0)
 
-	u.AddItem(unit.Unit(c1))
-	u.AddItem(unit.Unit(c2))
+	u.AddItem(c1)
+	u.AddItem(c2)
 
 	u.RemoveItem(0)
 	assert.Len(t, u.Items(), 1)
