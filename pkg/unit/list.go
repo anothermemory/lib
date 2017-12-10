@@ -17,7 +17,7 @@ type baseList struct {
 	items []Unit
 }
 
-// NewList cretes new List unit with given title
+// NewList creates new List unit with given title
 func NewList(title string) List {
 	return &baseList{baseUnit: baseUnit{title: title}}
 }
