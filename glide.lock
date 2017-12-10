@@ -1,8 +1,12 @@
-hash: f3ad8965678b15fa14c0db139081d1aa2987076cbf5e2371924eec6e112043b8
-updated: 2017-12-10T22:36:10.942571166+02:00
+hash: 1a754503a3d723de62f8762b480d89fda78143f324545bc6ffddd2ec99d84371
+updated: 2017-12-10T22:48:38.14599448+02:00
 imports:
+- name: github.com/russross/blackfriday
+  version: 187c33ff049bddf24fc5c5b82facfdd62813a552
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 86672fcb3f950f35f2e675df2240550f2a50762f
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9

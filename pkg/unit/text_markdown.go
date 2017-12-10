@@ -1,5 +1,7 @@
 package unit
 
+import "github.com/russross/blackfriday"
+
 // TextMarkdown represents unit which has some plain markdown content
 type TextMarkdown interface {
 	TextPlain
@@ -17,5 +19,5 @@ func NewTextMarkdown(title string, data string) TextMarkdown {
 }
 
 func (t *baseTextMarkdown) Render() string {
-	panic("implement me")
+	return string(blackfriday.Run([]byte(t.data)))
 }
