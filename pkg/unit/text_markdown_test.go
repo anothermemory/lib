@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"encoding/json"
+	"fmt"
+
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,6 +32,24 @@ func TestTextMarkdown_Render(t *testing.T) {
 		actual := unit.NewTextMarkdown("MyUnit", input).Render()
 		assert.Equal(t, expected, actual, tc)
 	}
+}
+
+func TestTextMarkdown_MarshalJSON(t *testing.T) {
+	u := unit.NewTextMarkdown("MyUnit", "abc")
+
+	bytes, err := json.Marshal(u)
+	assert.NoError(t, err)
+	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc"}`, u.ID()), string(bytes))
+}
+
+func TestTextMarkdown_UnmarshalJSON(t *testing.T) {
+	u := unit.NewTextMarkdown("", "")
+
+	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc"}`), &u)
+	assert.NoError(t, err)
+	assert.Equal(t, "123", u.ID())
+	assert.Equal(t, "MyUnit", u.Title())
+	assert.Equal(t, "abc", u.Data())
 }
 
 func readFile(t *testing.T, name string) string {

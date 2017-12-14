@@ -18,6 +18,6 @@ func NewTextMarkdown(title string, data string) TextMarkdown {
 	return &baseTextMarkdown{baseTextPlain: baseTextPlain{data: data, baseUnit: baseUnit{title: title}}}
 }
 
-func (t *baseTextMarkdown) Render() string {
-	return string(blackfriday.Run([]byte(t.data)))
+func (u *baseTextMarkdown) Render() string {
+	return string(blackfriday.Run([]byte(u.data)))
 }
