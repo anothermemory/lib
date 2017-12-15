@@ -14,6 +14,7 @@ type Unit interface {
 	SetID(id string)
 	Title() string
 	SetTitle(title string)
+	Type() string
 }
 
 // baseUnit represents default implementation of Unit interface
@@ -48,30 +49,43 @@ func (u *baseUnit) SetTitle(title string) {
 	u.title = title
 }
 
+func (u *baseUnit) Type() string {
+	return "unit"
+}
+
+type baseUnitJSON struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	Type  string `json:"type"`
+}
+
+func (u *baseUnit) fromJSONStruct(j baseUnitJSON) error {
+	if j.Type != u.Type() {
+		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
+	}
+	u.SetID(j.ID)
+	u.SetTitle(j.Title)
+
+	return nil
+}
+
 func (u *baseUnit) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&struct {
-		ID    string `json:"id"`
-		Title string `json:"title"`
-	}{
-		ID:    u.ID(),
-		Title: u.Title(),
-	})
+	return json.Marshal(baseUnitJSON{ID: u.ID(), Title: u.Title(), Type: u.Type()})
 }
 
 func (u *baseUnit) UnmarshalJSON(b []byte) error {
-	var jsonData = struct {
-		ID    string `json:"id"`
-		Title string `json:"title"`
-	}{}
-
+	var jsonData baseUnitJSON
 	err := json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
 	}
 
-	u.SetID(jsonData.ID)
-	u.SetTitle(jsonData.Title)
+	err = u.fromJSONStruct(jsonData)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
