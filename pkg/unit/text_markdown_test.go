@@ -39,17 +39,21 @@ func TestTextMarkdown_MarshalJSON(t *testing.T) {
 
 	bytes, err := json.Marshal(u)
 	assert.NoError(t, err)
-	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc"}`, u.ID()), string(bytes))
+	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc", "type": "text_markdown"}`, u.ID()), string(bytes))
 }
 
 func TestTextMarkdown_UnmarshalJSON(t *testing.T) {
 	u := unit.NewTextMarkdown("", "")
 
-	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc"}`), &u)
+	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc", "type": "text_markdown"}`), &u)
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
+}
+
+func TestTextMarkdown_Type(t *testing.T) {
+	assert.Equal(t, "text_markdown", unit.NewTextMarkdown("", "").Type())
 }
 
 func readFile(t *testing.T, name string) string {
