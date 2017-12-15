@@ -29,16 +29,21 @@ func TestTextCode_MarshalJSON(t *testing.T) {
 
 	bytes, err := json.Marshal(u)
 	assert.NoError(t, err)
-	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc", "language": "PHP"}`, u.ID()), string(bytes))
+	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc", "language": "PHP", "type":"text_code"}`, u.ID()), string(bytes))
 }
 
 func TestTextCode_UnmarshalJSON(t *testing.T) {
 	u := unit.NewTextCode("", "", "")
 
-	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc", "language": "PHP"}`), &u)
+	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc", "language": "PHP", "type":"text_code"}`), &u)
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
 	assert.Equal(t, "PHP", u.Language())
+	assert.Equal(t, "text_code", u.Type())
+}
+
+func TestTextCode_Type(t *testing.T) {
+	assert.Equal(t, "text_code", unit.NewTextCode("", "", "").Type())
 }

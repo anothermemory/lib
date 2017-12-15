@@ -30,38 +30,41 @@ func (u *baseTextCode) SetLanguage(language string) {
 	u.language = language
 }
 
+func (u *baseTextCode) Type() string {
+	return "text_code"
+}
+
+type baseTextCodeJSON struct {
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	Type     string `json:"type"`
+	Data     string `json:"data"`
+	Language string `json:"language"`
+}
+
+func (u *baseTextCode) fromJSONStruct(j baseTextCodeJSON) error {
+	if j.Type != u.Type() {
+		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
+	}
+	u.SetID(j.ID)
+	u.SetTitle(j.Title)
+	u.SetData(j.Data)
+	u.SetLanguage(j.Language)
+
+	return nil
+}
+
 func (u *baseTextCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&struct {
-		ID       string `json:"id"`
-		Title    string `json:"title"`
-		Data     string `json:"data"`
-		Language string `json:"language"`
-	}{
-		ID:       u.ID(),
-		Title:    u.Title(),
-		Data:     u.Data(),
-		Language: u.Language(),
-	})
+	return json.Marshal(baseTextCodeJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Data: u.Data(), Language: u.Language()})
 }
 
 func (u *baseTextCode) UnmarshalJSON(b []byte) error {
-	var jsonData = struct {
-		ID       string `json:"id"`
-		Title    string `json:"title"`
-		Data     string `json:"data"`
-		Language string `json:"language"`
-	}{}
-
+	var jsonData baseTextCodeJSON
 	err := json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
 	}
 
-	u.SetID(jsonData.ID)
-	u.SetTitle(jsonData.Title)
-	u.SetData(jsonData.Data)
-	u.SetLanguage(jsonData.Language)
-
-	return nil
+	return u.fromJSONStruct(jsonData)
 }
