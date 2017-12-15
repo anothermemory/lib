@@ -81,11 +81,5 @@ func (u *baseUnit) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	err = u.fromJSONStruct(jsonData)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return u.fromJSONStruct(jsonData)
 }

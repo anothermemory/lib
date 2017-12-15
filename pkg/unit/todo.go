@@ -38,33 +38,37 @@ func NewTodo(title string) Todo {
 }
 
 // Items returns unit child items
-func (t *baseTodo) Items() []TodoItem {
-	return t.items
+func (u *baseTodo) Items() []TodoItem {
+	return u.items
 }
 
 // SetItems sets unit child items
-func (t *baseTodo) SetItems(items []TodoItem) {
-	t.items = items
+func (u *baseTodo) SetItems(items []TodoItem) {
+	u.items = items
 }
 
 // AddItem adds new child item to the unit
-func (t *baseTodo) AddItem(item TodoItem) {
-	t.items = append(t.items, item)
+func (u *baseTodo) AddItem(item TodoItem) {
+	u.items = append(u.items, item)
 }
 
 // GetItem returns child item with given index
-func (t *baseTodo) GetItem(index int) TodoItem {
-	return t.items[index]
+func (u *baseTodo) GetItem(index int) TodoItem {
+	return u.items[index]
 }
 
 // SetItem sets child item with given index to new item
-func (t *baseTodo) SetItem(index int, item TodoItem) {
-	t.items[index] = item
+func (u *baseTodo) SetItem(index int, item TodoItem) {
+	u.items[index] = item
 }
 
 // RemoveItem removes child item with given index
-func (t *baseTodo) RemoveItem(index int) {
-	t.items = append(t.items[:index], t.items[index+1:]...)
+func (u *baseTodo) RemoveItem(index int) {
+	u.items = append(u.items[:index], u.items[index+1:]...)
+}
+
+func (u *baseTodo) Type() string {
+	return "todo"
 }
 
 // NewTodoItem creates new TodoItem with given data and status
@@ -73,21 +77,21 @@ func NewTodoItem(data string, done bool) TodoItem {
 }
 
 // Data returns item data
-func (t *baseTodoItem) Data() string {
-	return t.data
+func (i *baseTodoItem) Data() string {
+	return i.data
 }
 
 // SetData sets new item
-func (t *baseTodoItem) SetData(data string) {
-	t.data = data
+func (i *baseTodoItem) SetData(data string) {
+	i.data = data
 }
 
 // Done returns item done status
-func (t *baseTodoItem) Done() bool {
-	return t.done
+func (i *baseTodoItem) Done() bool {
+	return i.done
 }
 
 // SetDone sets new item done status
-func (t *baseTodoItem) SetDone(done bool) {
-	t.done = done
+func (i *baseTodoItem) SetDone(done bool) {
+	i.done = done
 }
