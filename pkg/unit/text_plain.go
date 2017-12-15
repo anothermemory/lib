@@ -30,34 +30,45 @@ func (u *baseTextPlain) SetData(data string) {
 	u.data = data
 }
 
+func (u *baseTextPlain) Type() string {
+	return "text_plain"
+}
+
+type baseTextPlainJSON struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	Type  string `json:"type"`
+	Data  string `json:"data"`
+}
+
+func (u *baseTextPlain) fromJSONStruct(j baseTextPlainJSON) error {
+	if j.Type != u.Type() {
+		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
+	}
+	u.SetID(j.ID)
+	u.SetTitle(j.Title)
+	u.SetData(j.Data)
+
+	return nil
+}
+
 func (u *baseTextPlain) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&struct {
-		ID    string `json:"id"`
-		Title string `json:"title"`
-		Data  string `json:"data"`
-	}{
-		ID:    u.ID(),
-		Title: u.title,
-		Data:  u.Data(),
-	})
+	return json.Marshal(baseTextPlainJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Data: u.Data()})
 }
 
 func (u *baseTextPlain) UnmarshalJSON(b []byte) error {
-	var jsonData = struct {
-		ID    string `json:"id"`
-		Title string `json:"title"`
-		Data  string `json:"data"`
-	}{}
-
+	var jsonData baseTextPlainJSON
 	err := json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
 	}
 
-	u.SetID(jsonData.ID)
-	u.SetTitle(jsonData.Title)
-	u.SetData(jsonData.Data)
+	err = u.fromJSONStruct(jsonData)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

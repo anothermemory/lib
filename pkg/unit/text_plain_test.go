@@ -29,15 +29,20 @@ func TestTextPlain_MarshalJSON(t *testing.T) {
 
 	bytes, err := json.Marshal(u)
 	assert.NoError(t, err)
-	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc"}`, u.ID()), string(bytes))
+	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "data": "abc", "type":"text_plain"}`, u.ID()), string(bytes))
 }
 
 func TestTextPlain_UnmarshalJSON(t *testing.T) {
 	u := unit.NewTextPlain("", "")
 
-	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc"}`), &u)
+	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "data": "abc", "type":"text_plain"}`), &u)
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
+	assert.Equal(t, "text_plain", u.Type())
+}
+
+func TestTextPlain_Type(t *testing.T) {
+	assert.Equal(t, "text_plain", unit.NewTextPlain("", "").Type())
 }
