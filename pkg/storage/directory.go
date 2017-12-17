@@ -50,7 +50,11 @@ func (s *directoryStorage) SaveUnit(u unit.Unit) error {
 }
 
 func (s *directoryStorage) RemoveUnit(u unit.Unit) error {
-	panic("implement me")
+	if !s.IsCreated() {
+		return ErrNotCreated
+	}
+
+	return os.Remove(newPersistentUnit(s.rootDir, u).Path())
 }
 
 func (s *directoryStorage) LoadUnit(id string) (unit.Unit, error) {
