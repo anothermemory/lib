@@ -37,16 +37,7 @@ func (s *directoryStorage) SaveUnit(u unit.Unit) error {
 	if !s.IsCreated() {
 		return ErrNotCreated
 	}
-	p := newPersistentUnit(s.rootDir, u)
-	err := os.MkdirAll(p.Directory(), os.ModePerm)
-	if err != nil {
-		return err
-	}
-	bytes, err := json.Marshal(u)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(p.Path(), bytes, os.ModePerm)
+	return newPersistentUnit(s.rootDir, u).save()
 }
 
 func (s *directoryStorage) RemoveUnit(u unit.Unit) error {
@@ -54,7 +45,7 @@ func (s *directoryStorage) RemoveUnit(u unit.Unit) error {
 		return ErrNotCreated
 	}
 
-	return os.Remove(newPersistentUnit(s.rootDir, u).Path())
+	return newPersistentUnit(s.rootDir, u).remove()
 }
 
 func (s *directoryStorage) LoadUnit(id string) (unit.Unit, error) {
@@ -96,14 +87,51 @@ func newPersistentUnit(rootDir string, u unit.Unit) *persistentUnit {
 	return &persistentUnit{unit: u, directory: d, filename: fn, path: path}
 }
 
-func (p *persistentUnit) Directory() string {
-	return p.directory
+type persistentListJSON struct {
+	ID    string   `json:"id"`
+	Title string   `json:"title"`
+	Type  string   `json:"type"`
+	Items []string `json:"items"`
 }
 
-func (p *persistentUnit) Filename() string {
-	return p.filename
+func (p *persistentUnit) marshalUnit(u unit.Unit) ([]byte, error) {
+	bytes, err := json.Marshal(u)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes, nil
 }
 
-func (p *persistentUnit) Path() string {
-	return p.path
+func (p *persistentUnit) marshalListUnit(u unit.List) ([]byte, error) {
+	var items []string
+	for _, i := range u.Items() {
+		items = append(items, i.ID())
+	}
+	return json.Marshal(persistentListJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Items: items})
+}
+
+func (p *persistentUnit) save() error {
+	err := os.MkdirAll(p.directory, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	var bytes []byte
+
+	switch s := p.unit.(type) {
+	case unit.List:
+		bytes, err = p.marshalListUnit(s)
+	default:
+		bytes, err = p.marshalUnit(s)
+	}
+
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(p.path, bytes, os.ModePerm)
+}
+
+func (p *persistentUnit) remove() error {
+	return os.Remove(p.path)
 }
