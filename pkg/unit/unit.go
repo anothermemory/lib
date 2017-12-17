@@ -83,3 +83,23 @@ func (u *baseUnit) UnmarshalJSON(b []byte) error {
 
 	return u.fromJSONStruct(jsonData)
 }
+
+func newUnitByType(t string) (Unit, error) {
+	switch t {
+	case "unit":
+		return NewUnit(""), nil
+	case "todo":
+		return NewTodo(""), nil
+	case "text_plain":
+		return NewTextPlain("", ""), nil
+	case "test_markdown":
+		return NewTextMarkdown("", ""), nil
+	case "text_code":
+		return NewTextCode("", "", ""), nil
+	case "list":
+		return NewList(""), nil
+	default:
+		return nil, &TypeError{Type: t}
+
+	}
+}
