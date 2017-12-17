@@ -3,6 +3,10 @@ package unit_test
 import (
 	"testing"
 
+	"encoding/json"
+
+	"fmt"
+
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
 )
@@ -107,6 +111,59 @@ func TestTodo_Items(t *testing.T) {
 		unit.NewTodoItem("def", false)})
 
 	items := u.Items()
+
+	tmp := items[0]
+	assert.Equal(t, "abc", tmp.Data())
+	assert.Equal(t, true, tmp.Done())
+
+	tmp = items[1]
+	assert.Equal(t, "def", tmp.Data())
+	assert.Equal(t, false, tmp.Done())
+}
+
+func TestTodoItem_MarshalJSON(t *testing.T) {
+	i := unit.NewTodoItem("abc", true)
+
+	bytes, err := json.Marshal(i)
+	assert.NoError(t, err)
+	assert.JSONEq(t, `{"data": "abc", "done": true}`, string(bytes))
+}
+
+func TestTodoItem_UnmarshalJSON(t *testing.T) {
+	i := unit.NewTodoItem("", false)
+
+	err := json.Unmarshal([]byte(`{"data": "abc", "done": true}`), &i)
+	assert.NoError(t, err)
+	assert.Equal(t, "abc", i.Data())
+	assert.True(t, i.Done())
+}
+
+func TestTodo_Type(t *testing.T) {
+	assert.Equal(t, "todo", unit.NewTodo("").Type())
+}
+
+func TestTodo_MarshalJSON(t *testing.T) {
+	u := unit.NewTodo("MyUnit")
+	u.SetItems([]unit.TodoItem{
+		unit.NewTodoItem("abc", true),
+		unit.NewTodoItem("def", false)})
+
+	bytes, err := json.Marshal(u)
+	assert.NoError(t, err)
+	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "type":"todo", "items":[{"data": "abc", "done": true},{"data": "def", "done": false}]}`, u.ID()), string(bytes))
+}
+
+func TestTodo_UnmarshalJSON(t *testing.T) {
+	u := unit.NewTodo("MyUnit")
+
+	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "type":"todo", "items":[{"data": "abc", "done": true},{"data": "def", "done": false}]}`), &u)
+	assert.NoError(t, err)
+	assert.Equal(t, "123", u.ID())
+	assert.Equal(t, "MyUnit", u.Title())
+	assert.Equal(t, "todo", u.Type())
+
+	items := u.Items()
+	assert.Len(t, items, 2)
 
 	tmp := items[0]
 	assert.Equal(t, "abc", tmp.Data())

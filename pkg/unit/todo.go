@@ -1,5 +1,7 @@
 package unit
 
+import "encoding/json"
+
 // Todo represents unit which contains todo items
 type Todo interface {
 	Unit
@@ -94,4 +96,71 @@ func (i *baseTodoItem) Done() bool {
 // SetDone sets new item done status
 func (i *baseTodoItem) SetDone(done bool) {
 	i.done = done
+}
+
+type baseTodoItemJSON struct {
+	Data string `json:"data"`
+	Done bool   `json:"done"`
+}
+
+func (i *baseTodoItem) fromJSONStruct(j baseTodoItemJSON) error {
+	i.SetData(j.Data)
+	i.SetDone(j.Done)
+
+	return nil
+}
+
+func (i *baseTodoItem) MarshalJSON() ([]byte, error) {
+	return json.Marshal(baseTodoItemJSON{Data: i.Data(), Done: i.Done()})
+}
+
+func (i *baseTodoItem) UnmarshalJSON(b []byte) error {
+	var jsonData baseTodoItemJSON
+	err := json.Unmarshal(b, &jsonData)
+
+	if err != nil {
+		return err
+	}
+
+	return i.fromJSONStruct(jsonData)
+}
+
+type baseTodoJSON struct {
+	ID    string             `json:"id"`
+	Title string             `json:"title"`
+	Type  string             `json:"type"`
+	Items []baseTodoItemJSON `json:"items"`
+}
+
+func (u *baseTodo) fromJSONStruct(j baseTodoJSON) error {
+	if j.Type != u.Type() {
+		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
+	}
+	u.SetID(j.ID)
+	u.SetTitle(j.Title)
+
+	for _, v := range j.Items {
+		u.AddItem(NewTodoItem(v.Data, v.Done))
+	}
+
+	return nil
+}
+
+func (u *baseTodo) MarshalJSON() ([]byte, error) {
+	var items []baseTodoItemJSON
+	for _, v := range u.items {
+		items = append(items, baseTodoItemJSON{Data: v.Data(), Done: v.Done()})
+	}
+	return json.Marshal(baseTodoJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Items: items})
+}
+
+func (u *baseTodo) UnmarshalJSON(b []byte) error {
+	var jsonData baseTodoJSON
+	err := json.Unmarshal(b, &jsonData)
+
+	if err != nil {
+		return err
+	}
+
+	return u.fromJSONStruct(jsonData)
 }
