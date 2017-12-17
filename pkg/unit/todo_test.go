@@ -32,6 +32,7 @@ func TestTodoItem_Done(t *testing.T) {
 func TestNewTodo(t *testing.T) {
 	u := unit.NewTodo("MyUnit")
 	assert.NotNil(t, u.ID())
+	assert.NotEmpty(t, u.ID())
 	assert.Equal(t, u.Title(), "MyUnit")
 	assert.Empty(t, u.Items())
 	assert.Len(t, u.Items(), 0)

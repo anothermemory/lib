@@ -17,7 +17,7 @@ type baseTextPlain struct {
 
 // NewTextPlain creates new TextPlain unit with given title and data
 func NewTextPlain(title string, data string) TextPlain {
-	return &baseTextPlain{baseUnit: baseUnit{title: title}, data: data}
+	return &baseTextPlain{baseUnit: *newBaseUnit(title), data: data}
 }
 
 // Data returns unit data

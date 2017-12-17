@@ -14,6 +14,7 @@ import (
 func TestNewTextPlain(t *testing.T) {
 	u := unit.NewTextPlain("MyUnit", "MyData")
 	assert.NotNil(t, u.ID())
+	assert.NotEmpty(t, u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "MyData", u.Data())
 }

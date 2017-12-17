@@ -16,6 +16,7 @@ import (
 func TestNewTextMarkdown(t *testing.T) {
 	u := unit.NewTextMarkdown("MyUnit", "MyData")
 	assert.NotNil(t, u.ID())
+	assert.NotEmpty(t, u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "MyData", u.Data())
 }

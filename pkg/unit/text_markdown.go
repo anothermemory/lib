@@ -19,7 +19,7 @@ type baseTextMarkdown struct {
 
 // NewTextMarkdown creates new TextMarkdown unit with given title and data
 func NewTextMarkdown(title string, data string) TextMarkdown {
-	return &baseTextMarkdown{baseTextPlain: baseTextPlain{data: data, baseUnit: baseUnit{title: title}}}
+	return &baseTextMarkdown{baseTextPlain: baseTextPlain{data: data, baseUnit: *newBaseUnit(title)}}
 }
 
 func (u *baseTextMarkdown) Render() string {

@@ -36,7 +36,7 @@ type baseTodoItem struct {
 
 // NewTodo creates new Todo unit with given title
 func NewTodo(title string) Todo {
-	return &baseTodo{baseUnit: baseUnit{title: title}}
+	return &baseTodo{baseUnit: *newBaseUnit(title)}
 }
 
 // Items returns unit child items

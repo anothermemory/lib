@@ -13,6 +13,7 @@ import (
 func TestNewTextCode(t *testing.T) {
 	u := unit.NewTextCode("MyUnit", "MyData", "PHP")
 	assert.NotNil(t, u.ID())
+	assert.NotEmpty(t, u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "MyData", u.Data())
 	assert.Equal(t, "PHP", u.Language())

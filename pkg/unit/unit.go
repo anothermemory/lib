@@ -26,6 +26,10 @@ type baseUnit struct {
 
 // NewUnit creates new Unit with given title. Unit id is generated automatically
 func NewUnit(title string) Unit {
+	return newBaseUnit(title)
+}
+
+func newBaseUnit(title string) *baseUnit {
 	return &baseUnit{id: uuid.NewV4().String(), title: title}
 }
 

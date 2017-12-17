@@ -17,7 +17,7 @@ type baseTextCode struct {
 
 // NewTextCode creates new TextCode unit with given title, data and language
 func NewTextCode(title string, data string, language string) TextCode {
-	return &baseTextCode{baseTextPlain: baseTextPlain{data: data, baseUnit: baseUnit{title: title}}, language: language}
+	return &baseTextCode{baseTextPlain: baseTextPlain{data: data, baseUnit: *newBaseUnit(title)}, language: language}
 }
 
 // Language returns unit language
