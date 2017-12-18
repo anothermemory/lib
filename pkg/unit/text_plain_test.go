@@ -41,9 +41,9 @@ func TestTextPlain_UnmarshalJSON(t *testing.T) {
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
-	assert.Equal(t, "text_plain", u.Type())
+	assert.Equal(t, unit.TypeTextPlain, u.Type())
 }
 
 func TestTextPlain_Type(t *testing.T) {
-	assert.Equal(t, "text_plain", unit.NewTextPlain("", "").Type())
+	assert.Equal(t, unit.TypeTextPlain, unit.NewTextPlain("", "").Type())
 }

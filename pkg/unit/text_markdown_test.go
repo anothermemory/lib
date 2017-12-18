@@ -51,10 +51,11 @@ func TestTextMarkdown_UnmarshalJSON(t *testing.T) {
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
+	assert.Equal(t, unit.TypeTextMarkdown, u.Type())
 }
 
 func TestTextMarkdown_Type(t *testing.T) {
-	assert.Equal(t, "text_markdown", unit.NewTextMarkdown("", "").Type())
+	assert.Equal(t, unit.TypeTextMarkdown, unit.NewTextMarkdown("", "").Type())
 }
 
 func readFile(t *testing.T, name string) string {

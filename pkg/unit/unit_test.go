@@ -43,9 +43,9 @@ func TestUnit_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
-	assert.Equal(t, "unit", u.Type())
+	assert.Equal(t, unit.TypeUnit, u.Type())
 }
 
 func TestUnit_Type(t *testing.T) {
-	assert.Equal(t, "unit", unit.NewUnit("").Type())
+	assert.Equal(t, unit.TypeUnit, unit.NewUnit("").Type())
 }

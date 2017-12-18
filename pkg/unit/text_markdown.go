@@ -26,14 +26,14 @@ func (u *baseTextMarkdown) Render() string {
 	return string(blackfriday.Run([]byte(u.data)))
 }
 
-func (u *baseTextMarkdown) Type() string {
-	return "text_markdown"
+func (u *baseTextMarkdown) Type() Type {
+	return TypeTextMarkdown
 }
 
 type baseTextMarkdownJSON struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
-	Type  string `json:"type"`
+	Type  Type   `json:"type"`
 	Data  string `json:"data"`
 }
 

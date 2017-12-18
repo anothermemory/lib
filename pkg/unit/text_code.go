@@ -30,14 +30,14 @@ func (u *baseTextCode) SetLanguage(language string) {
 	u.language = language
 }
 
-func (u *baseTextCode) Type() string {
-	return "text_code"
+func (u *baseTextCode) Type() Type {
+	return TypeTextCode
 }
 
 type baseTextCodeJSON struct {
 	ID       string `json:"id"`
 	Title    string `json:"title"`
-	Type     string `json:"type"`
+	Type     Type   `json:"type"`
 	Data     string `json:"data"`
 	Language string `json:"language"`
 }

@@ -142,7 +142,7 @@ func TestList_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
-	assert.Equal(t, "list", u.Type())
+	assert.Equal(t, unit.TypeList, u.Type())
 
 	items := u.Items()
 
@@ -158,4 +158,8 @@ func TestList_UnmarshalJSON(t *testing.T) {
 	assert.Equal(t, "MyCode", i2.Title())
 	assert.Equal(t, "def", i2.Data())
 	assert.Equal(t, "PHP", i2.Language())
+}
+
+func TestList_Type(t *testing.T) {
+	assert.Equal(t, unit.TypeList, unit.NewList("").Type())
 }

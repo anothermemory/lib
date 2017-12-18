@@ -14,7 +14,7 @@ type Unit interface {
 	SetID(id string)
 	Title() string
 	SetTitle(title string)
-	Type() string
+	Type() Type
 }
 
 // baseUnit represents default implementation of Unit interface
@@ -53,14 +53,14 @@ func (u *baseUnit) SetTitle(title string) {
 	u.title = title
 }
 
-func (u *baseUnit) Type() string {
-	return "unit"
+func (u *baseUnit) Type() Type {
+	return TypeUnit
 }
 
 type baseUnitJSON struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
-	Type  string `json:"type"`
+	Type  Type   `json:"type"`
 }
 
 func (u *baseUnit) fromJSONStruct(j baseUnitJSON) error {
@@ -88,19 +88,19 @@ func (u *baseUnit) UnmarshalJSON(b []byte) error {
 	return u.fromJSONStruct(jsonData)
 }
 
-func newUnitByType(t string) (Unit, error) {
+func newUnitByType(t Type) (Unit, error) {
 	switch t {
-	case "unit":
+	case TypeUnit:
 		return NewUnit(""), nil
-	case "todo":
+	case TypeTodo:
 		return NewTodo(""), nil
-	case "text_plain":
+	case TypeTextPlain:
 		return NewTextPlain("", ""), nil
-	case "test_markdown":
+	case TypeTextMarkdown:
 		return NewTextMarkdown("", ""), nil
-	case "text_code":
+	case TypeTextCode:
 		return NewTextCode("", "", ""), nil
-	case "list":
+	case TypeList:
 		return NewList(""), nil
 	default:
 		return nil, &TypeError{Type: t}

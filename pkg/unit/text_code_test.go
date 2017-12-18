@@ -42,9 +42,9 @@ func TestTextCode_UnmarshalJSON(t *testing.T) {
 	assert.Equal(t, "MyUnit", u.Title())
 	assert.Equal(t, "abc", u.Data())
 	assert.Equal(t, "PHP", u.Language())
-	assert.Equal(t, "text_code", u.Type())
+	assert.Equal(t, unit.TypeTextCode, u.Type())
 }
 
 func TestTextCode_Type(t *testing.T) {
-	assert.Equal(t, "text_code", unit.NewTextCode("", "", "").Type())
+	assert.Equal(t, unit.TypeTextCode, unit.NewTextCode("", "", "").Type())
 }

@@ -4,7 +4,7 @@ import "fmt"
 
 // JSONTypeError represents error when type received in JSON message is different from type of the target unit
 type JSONTypeError struct {
-	Expected, Actual string
+	Expected, Actual Type
 }
 
 func (e JSONTypeError) Error() string {
@@ -13,7 +13,7 @@ func (e JSONTypeError) Error() string {
 
 // TypeError represents error when type of some unit is unexpected at this point
 type TypeError struct {
-	Type string
+	Type Type
 }
 
 func (e TypeError) Error() string {

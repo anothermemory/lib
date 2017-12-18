@@ -30,14 +30,14 @@ func (u *baseTextPlain) SetData(data string) {
 	u.data = data
 }
 
-func (u *baseTextPlain) Type() string {
-	return "text_plain"
+func (u *baseTextPlain) Type() Type {
+	return TypeTextPlain
 }
 
 type baseTextPlainJSON struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
-	Type  string `json:"type"`
+	Type  Type   `json:"type"`
 	Data  string `json:"data"`
 }
 

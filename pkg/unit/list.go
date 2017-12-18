@@ -54,19 +54,19 @@ func (u *baseList) RemoveItem(index int) {
 	u.items = append(u.items[:index], u.items[index+1:]...)
 }
 
-func (u *baseList) Type() string {
-	return "list"
+func (u *baseList) Type() Type {
+	return TypeList
 }
 
 type baseListJSON struct {
 	ID    string            `json:"id"`
 	Title string            `json:"title"`
-	Type  string            `json:"type"`
+	Type  Type              `json:"type"`
 	Items []json.RawMessage `json:"items"`
 }
 
 type baseListItemJSON struct {
-	Type string `json:"type"`
+	Type Type `json:"type"`
 }
 
 func (u *baseList) fromJSONStruct(j baseListJSON) error {

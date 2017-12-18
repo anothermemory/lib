@@ -140,7 +140,7 @@ func TestTodoItem_UnmarshalJSON(t *testing.T) {
 }
 
 func TestTodo_Type(t *testing.T) {
-	assert.Equal(t, "todo", unit.NewTodo("").Type())
+	assert.Equal(t, unit.TypeTodo, unit.NewTodo("").Type())
 }
 
 func TestTodo_MarshalJSON(t *testing.T) {
@@ -161,7 +161,7 @@ func TestTodo_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "123", u.ID())
 	assert.Equal(t, "MyUnit", u.Title())
-	assert.Equal(t, "todo", u.Type())
+	assert.Equal(t, unit.TypeTodo, u.Type())
 
 	items := u.Items()
 	assert.Len(t, items, 2)

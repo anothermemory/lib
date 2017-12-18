@@ -69,8 +69,8 @@ func (u *baseTodo) RemoveItem(index int) {
 	u.items = append(u.items[:index], u.items[index+1:]...)
 }
 
-func (u *baseTodo) Type() string {
-	return "todo"
+func (u *baseTodo) Type() Type {
+	return TypeTodo
 }
 
 // NewTodoItem creates new TodoItem with given data and status
@@ -128,7 +128,7 @@ func (i *baseTodoItem) UnmarshalJSON(b []byte) error {
 type baseTodoJSON struct {
 	ID    string             `json:"id"`
 	Title string             `json:"title"`
-	Type  string             `json:"type"`
+	Type  Type               `json:"type"`
 	Items []baseTodoItemJSON `json:"items"`
 }
 
