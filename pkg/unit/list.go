@@ -20,8 +20,12 @@ type baseList struct {
 }
 
 // NewList creates new List unit with given title
-func NewList(title string) List {
-	return &baseList{baseUnit: *newBaseUnit(title)}
+func NewList() List {
+	return newBaseList()
+}
+
+func newBaseList() *baseList {
+	return &baseList{baseUnit: *newBaseUnit(TypeList)}
 }
 
 // Items returns unit child units
@@ -32,11 +36,13 @@ func (u *baseList) Items() []Unit {
 // SetItems sets unit child units
 func (u *baseList) SetItems(items []Unit) {
 	u.items = items
+	u.refreshUpdated()
 }
 
 // AddItem adds new child unit to the unit
 func (u *baseList) AddItem(item Unit) {
 	u.items = append(u.items, item)
+	u.refreshUpdated()
 }
 
 // GetItem returns child unit with given index
@@ -47,11 +53,13 @@ func (u *baseList) GetItem(index int) Unit {
 // SetItem sets child unit with given index to new unit
 func (u *baseList) SetItem(index int, item Unit) {
 	u.items[index] = item
+	u.refreshUpdated()
 }
 
 // RemoveItem removes child unit with given index
 func (u *baseList) RemoveItem(index int) {
 	u.items = append(u.items[:index], u.items[index+1:]...)
+	u.refreshUpdated()
 }
 
 func (u *baseList) Type() Type {
@@ -59,9 +67,7 @@ func (u *baseList) Type() Type {
 }
 
 type baseListJSON struct {
-	ID    string            `json:"id"`
-	Title string            `json:"title"`
-	Type  Type              `json:"type"`
+	baseUnitJSON
 	Items []json.RawMessage `json:"items"`
 }
 
@@ -70,12 +76,6 @@ type baseListItemJSON struct {
 }
 
 func (u *baseList) fromJSONStruct(j baseListJSON) error {
-	if j.Type != u.Type() {
-		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
-	}
-	u.SetID(j.ID)
-	u.SetTitle(j.Title)
-
 	for _, i := range j.Items {
 		item, err := createListItemFromJSON(i)
 		if err != nil {
@@ -89,17 +89,12 @@ func (u *baseList) fromJSONStruct(j baseListJSON) error {
 
 func createListItemFromJSON(j json.RawMessage) (Unit, error) {
 	var ji baseListItemJSON
-	var err error
-	var i Unit
-	err = json.Unmarshal(j, &ji)
+	err := json.Unmarshal(j, &ji)
 	if err != nil {
 		return nil, err
 	}
 
-	i, err = newUnitByType(ji.Type)
-	if err != nil {
-		return nil, err
-	}
+	i := ji.Type.NewObject()
 
 	err = json.Unmarshal(j, &i)
 	if err != nil {
@@ -118,12 +113,20 @@ func (u *baseList) MarshalJSON() ([]byte, error) {
 		}
 		items = append(items, json.RawMessage(ij))
 	}
-	return json.Marshal(baseListJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Items: items})
+	return json.Marshal(baseListJSON{
+		baseUnitJSON: baseUnitJSON{ID: u.id, Title: u.title, Type: u.unitType, Created: u.created, Updated: u.updated},
+		Items:        items,
+	})
 }
 
 func (u *baseList) UnmarshalJSON(b []byte) error {
+	err := u.baseUnit.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+
 	var jsonData baseListJSON
-	err := json.Unmarshal(b, &jsonData)
+	err = json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err

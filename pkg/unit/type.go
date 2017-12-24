@@ -23,7 +23,7 @@ const (
 	TypeTextCode
 )
 
-var types = map[Type]string{
+var typeStrings = map[Type]string{
 	TypeUnit:         "unit",
 	TypeList:         "list",
 	TypeTodo:         "todo",
@@ -32,9 +32,18 @@ var types = map[Type]string{
 	TypeTextCode:     "text_code",
 }
 
+var typeObjects = map[Type]func() Unit{
+	TypeUnit:         func() Unit { return NewUnit() },
+	TypeList:         func() Unit { return NewList() },
+	TypeTodo:         func() Unit { return NewTodo() },
+	TypeTextPlain:    func() Unit { return NewTextPlain() },
+	TypeTextMarkdown: func() Unit { return NewTextMarkdown() },
+	TypeTextCode:     func() Unit { return NewTextCode() },
+}
+
 // String returns string representation of type
 func (t Type) String() string {
-	val, ok := types[t]
+	val, ok := typeStrings[t]
 	if !ok {
 		return fmt.Sprintf("Type(%d)", t)
 	}
@@ -43,7 +52,7 @@ func (t Type) String() string {
 
 // TypeFromString returns type by it's string representation
 func TypeFromString(s string) (Type, error) {
-	for k, v := range types {
+	for k, v := range typeStrings {
 		if v == s {
 			return k, nil
 		}
@@ -67,4 +76,9 @@ func (t *Type) UnmarshalJSON(data []byte) error {
 	var err error
 	*t, err = TypeFromString(s)
 	return err
+}
+
+// NewObject creates new empty object of given type
+func (t *Type) NewObject() Unit {
+	return typeObjects[*t]()
 }
