@@ -16,8 +16,12 @@ type baseTextCode struct {
 }
 
 // NewTextCode creates new TextCode unit with given title, data and language
-func NewTextCode(title string, data string, language string) TextCode {
-	return &baseTextCode{baseTextPlain: baseTextPlain{data: data, baseUnit: *newBaseUnit(title)}, language: language}
+func NewTextCode() TextCode {
+	return newBaseTextCode()
+}
+
+func newBaseTextCode() *baseTextCode {
+	return &baseTextCode{baseTextPlain: baseTextPlain{baseUnit: *newBaseUnit(TypeTextCode)}}
 }
 
 // Language returns unit language
@@ -30,37 +34,33 @@ func (u *baseTextCode) SetLanguage(language string) {
 	u.language = language
 }
 
-func (u *baseTextCode) Type() Type {
-	return TypeTextCode
-}
-
 type baseTextCodeJSON struct {
-	ID       string `json:"id"`
-	Title    string `json:"title"`
-	Type     Type   `json:"type"`
-	Data     string `json:"data"`
+	baseTextPlainJSON
 	Language string `json:"language"`
 }
 
 func (u *baseTextCode) fromJSONStruct(j baseTextCodeJSON) error {
-	if j.Type != u.Type() {
-		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
-	}
-	u.SetID(j.ID)
-	u.SetTitle(j.Title)
-	u.SetData(j.Data)
-	u.SetLanguage(j.Language)
+	u.language = j.Language
 
 	return nil
 }
 
 func (u *baseTextCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(baseTextCodeJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Data: u.Data(), Language: u.Language()})
+	return json.Marshal(baseTextCodeJSON{
+		baseTextPlainJSON: baseTextPlainJSON{
+			baseUnitJSON: baseUnitJSON{ID: u.id, Title: u.title, Type: u.unitType, Created: u.created, Updated: u.updated},
+			Data:         u.Data(),
+		}, Language: u.language})
 }
 
 func (u *baseTextCode) UnmarshalJSON(b []byte) error {
+	err := u.baseTextPlain.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+
 	var jsonData baseTextCodeJSON
-	err := json.Unmarshal(b, &jsonData)
+	err = json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
