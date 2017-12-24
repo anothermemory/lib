@@ -10,21 +10,20 @@ import (
 )
 
 func TestNewTodoItem(t *testing.T) {
-	i := unit.NewTodoItem("abc", true)
-	assert.Equal(t, "abc", i.Data())
-	assert.True(t, i.Done())
+	i := unit.NewTodo().NewItem()
+	assert.Implements(t, (*unit.TodoItem)(nil), i)
 }
 
 func TestBaseTodoItem_Data(t *testing.T) {
-	u := unit.NewTodoItem("abc", true)
-	u.SetData("MyData")
-	assert.Equal(t, "MyData", u.Data())
+	i := unit.NewTodo().NewItem()
+	i.SetData("MyData")
+	assert.Equal(t, "MyData", i.Data())
 }
 
 func TestBaseTodoItem_Done(t *testing.T) {
-	u := unit.NewTodoItem("abc", true)
-	u.SetDone(false)
-	assert.False(t, u.Done())
+	i := unit.NewTodo().NewItem()
+	i.SetDone(false)
+	assert.False(t, i.Done())
 }
 
 func TestNewTodo(t *testing.T) {
@@ -34,8 +33,12 @@ func TestNewTodo(t *testing.T) {
 
 func TestTodo_AddItem(t *testing.T) {
 	u := unit.NewTodo()
-	c1 := unit.NewTodoItem("abc", true)
-	c2 := unit.NewTodoItem("def", false)
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
 
 	assert.Empty(t, u.Items())
 	assert.Len(t, u.Items(), 0)
@@ -50,8 +53,12 @@ func TestTodo_AddItem(t *testing.T) {
 
 func TestTodo_GetItem(t *testing.T) {
 	u := unit.NewTodo()
-	c1 := unit.NewTodoItem("abc", true)
-	c2 := unit.NewTodoItem("def", false)
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
 
 	u.AddItem(c1)
 	u.AddItem(c2)
@@ -67,8 +74,12 @@ func TestTodo_GetItem(t *testing.T) {
 
 func TestTodo_SetItem(t *testing.T) {
 	u := unit.NewTodo()
-	c1 := unit.NewTodoItem("abc", true)
-	c2 := unit.NewTodoItem("def", false)
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
 
 	u.AddItem(c1)
 
@@ -84,8 +95,12 @@ func TestTodo_SetItem(t *testing.T) {
 
 func TestTodo_RemoveItem(t *testing.T) {
 	u := unit.NewTodo()
-	c1 := unit.NewTodoItem("abc", true)
-	c2 := unit.NewTodoItem("def", false)
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
 
 	assert.Empty(t, u.Items())
 	assert.Len(t, u.Items(), 0)
@@ -101,9 +116,13 @@ func TestTodo_RemoveItem(t *testing.T) {
 
 func TestTodo_Items(t *testing.T) {
 	u := unit.NewTodo()
-	u.SetItems([]unit.TodoItem{
-		unit.NewTodoItem("abc", true),
-		unit.NewTodoItem("def", false)})
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
+	u.SetItems([]unit.TodoItem{c1, c2})
 
 	items := u.Items()
 
@@ -117,7 +136,9 @@ func TestTodo_Items(t *testing.T) {
 }
 
 func TestTodoItem_MarshalJSON(t *testing.T) {
-	i := unit.NewTodoItem("abc", true)
+	i := unit.NewTodo().NewItem()
+	i.SetData("abc")
+	i.SetDone(true)
 
 	bytes, err := json.Marshal(i)
 	assert.NoError(t, err)
@@ -125,7 +146,7 @@ func TestTodoItem_MarshalJSON(t *testing.T) {
 }
 
 func TestTodoItem_UnmarshalJSON(t *testing.T) {
-	i := unit.NewTodoItem("", false)
+	i := unit.NewTodo().NewItem()
 
 	err := json.Unmarshal([]byte(`{"data": "abc", "done": true}`), &i)
 	assert.NoError(t, err)

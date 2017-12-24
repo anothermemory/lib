@@ -10,9 +10,13 @@ import (
 
 func TestTodo_MarshalJSON(t *testing.T) {
 	u := newBaseTodo()
-	u.SetItems([]TodoItem{
-		NewTodoItem("abc", true),
-		NewTodoItem("def", false)})
+	c1 := u.NewItem()
+	c1.SetData("abc")
+	c1.SetDone(true)
+	c2 := u.NewItem()
+	c2.SetData("def")
+	c2.SetDone(false)
+	u.SetItems([]TodoItem{c1, c2})
 	freezeUnitTime(&u.baseUnit, createdTime, updatedTime)
 
 	bytes, err := json.Marshal(u)

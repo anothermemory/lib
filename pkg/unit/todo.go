@@ -1,10 +1,13 @@
 package unit
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Todo represents unit which contains todo items
 type Todo interface {
 	Unit
+	NewItem() TodoItem
 	Items() []TodoItem
 	SetItems(items []TodoItem)
 	AddItem(item TodoItem)
@@ -29,17 +32,9 @@ type baseTodo struct {
 
 // baseTodo represents default implementation of TodoItem interface
 type baseTodoItem struct {
+	todo *baseTodo
 	data string
 	done bool
-}
-
-// NewTodoItem creates new TodoItem with given data and status
-func NewTodoItem(data string, done bool) TodoItem {
-	return newBaseTodoItem(data, done)
-}
-
-func newBaseTodoItem(data string, done bool) *baseTodoItem {
-	return &baseTodoItem{data: data, done: done}
 }
 
 // Data returns item data
@@ -50,7 +45,7 @@ func (i *baseTodoItem) Data() string {
 // SetData sets new item
 func (i *baseTodoItem) SetData(data string) {
 	i.data = data
-	//todo:refreshParentUpdated
+	i.todo.refreshUpdated()
 }
 
 // Done returns item done status
@@ -61,7 +56,7 @@ func (i *baseTodoItem) Done() bool {
 // SetDone sets new item done status
 func (i *baseTodoItem) SetDone(done bool) {
 	i.done = done
-	//todo:refreshParentUpdated
+	i.todo.refreshUpdated()
 }
 
 type baseTodoItemJSON struct {
@@ -98,6 +93,10 @@ func NewTodo() Todo {
 
 func newBaseTodo() *baseTodo {
 	return &baseTodo{baseUnit: *newBaseUnit(TypeTodo)}
+}
+
+func (u *baseTodo) NewItem() TodoItem {
+	return &baseTodoItem{todo: u}
 }
 
 // Items returns unit child items
@@ -141,7 +140,7 @@ type baseTodoJSON struct {
 
 func (u *baseTodo) fromJSONStruct(j baseTodoJSON) error {
 	for _, v := range j.Items {
-		u.AddItem(NewTodoItem(v.Data, v.Done))
+		u.AddItem(&baseTodoItem{todo: u, data: v.Data, done: v.Done})
 	}
 
 	return nil
