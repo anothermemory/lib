@@ -32,6 +32,7 @@ func (u *baseTextCode) Language() string {
 // SetLanguage sets new unit language
 func (u *baseTextCode) SetLanguage(language string) {
 	u.language = language
+	u.refreshUpdated()
 }
 
 type baseTextCodeJSON struct {
