@@ -16,8 +16,12 @@ type baseTextPlain struct {
 }
 
 // NewTextPlain creates new TextPlain unit with given title and data
-func NewTextPlain(title string, data string) TextPlain {
-	return &baseTextPlain{baseUnit: *newBaseUnit(title), data: data}
+func NewTextPlain() TextPlain {
+	return newBaseTextPlain()
+}
+
+func newBaseTextPlain() *baseTextPlain {
+	return &baseTextPlain{baseUnit: *newBaseUnit(TypeTextPlain)}
 }
 
 // Data returns unit data
@@ -28,37 +32,34 @@ func (u *baseTextPlain) Data() string {
 // SetData sets new unit data
 func (u *baseTextPlain) SetData(data string) {
 	u.data = data
-}
-
-func (u *baseTextPlain) Type() Type {
-	return TypeTextPlain
+	u.refreshUpdated()
 }
 
 type baseTextPlainJSON struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
-	Type  Type   `json:"type"`
-	Data  string `json:"data"`
+	baseUnitJSON
+	Data string `json:"data"`
 }
 
 func (u *baseTextPlain) fromJSONStruct(j baseTextPlainJSON) error {
-	if j.Type != u.Type() {
-		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
-	}
-	u.SetID(j.ID)
-	u.SetTitle(j.Title)
-	u.SetData(j.Data)
-
+	u.data = j.Data
 	return nil
 }
 
 func (u *baseTextPlain) MarshalJSON() ([]byte, error) {
-	return json.Marshal(baseTextPlainJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Data: u.Data()})
+	return json.Marshal(baseTextPlainJSON{
+		baseUnitJSON: baseUnitJSON{ID: u.id, Title: u.title, Type: u.unitType, Created: u.created, Updated: u.updated},
+		Data:         u.Data(),
+	})
 }
 
 func (u *baseTextPlain) UnmarshalJSON(b []byte) error {
+	err := u.baseUnit.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+
 	var jsonData baseTextPlainJSON
-	err := json.Unmarshal(b, &jsonData)
+	err = json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
