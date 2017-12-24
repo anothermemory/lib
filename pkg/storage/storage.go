@@ -9,7 +9,6 @@ type Storage interface {
 	SaveUnit(u unit.Unit) error
 	RemoveUnit(u unit.Unit) error
 	LoadUnit(id string) (unit.Unit, error)
-	LoadUnits(ids []string) (map[string]unit.Unit, error)
 	IsCreated() bool
 	Create() error
 	Remove() error
