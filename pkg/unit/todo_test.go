@@ -5,8 +5,6 @@ import (
 
 	"encoding/json"
 
-	"fmt"
-
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,29 +15,25 @@ func TestNewTodoItem(t *testing.T) {
 	assert.True(t, i.Done())
 }
 
-func TestTodoItem_Data(t *testing.T) {
+func TestBaseTodoItem_Data(t *testing.T) {
 	u := unit.NewTodoItem("abc", true)
 	u.SetData("MyData")
 	assert.Equal(t, "MyData", u.Data())
 }
 
-func TestTodoItem_Done(t *testing.T) {
+func TestBaseTodoItem_Done(t *testing.T) {
 	u := unit.NewTodoItem("abc", true)
 	u.SetDone(false)
 	assert.False(t, u.Done())
 }
 
 func TestNewTodo(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
-	assert.NotNil(t, u.ID())
-	assert.NotEmpty(t, u.ID())
-	assert.Equal(t, u.Title(), "MyUnit")
-	assert.Empty(t, u.Items())
-	assert.Len(t, u.Items(), 0)
+	u := unit.NewTodo()
+	assert.Equal(t, unit.TypeTodo, u.Type())
 }
 
 func TestTodo_AddItem(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
+	u := unit.NewTodo()
 	c1 := unit.NewTodoItem("abc", true)
 	c2 := unit.NewTodoItem("def", false)
 
@@ -55,7 +49,7 @@ func TestTodo_AddItem(t *testing.T) {
 }
 
 func TestTodo_GetItem(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
+	u := unit.NewTodo()
 	c1 := unit.NewTodoItem("abc", true)
 	c2 := unit.NewTodoItem("def", false)
 
@@ -72,7 +66,7 @@ func TestTodo_GetItem(t *testing.T) {
 }
 
 func TestTodo_SetItem(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
+	u := unit.NewTodo()
 	c1 := unit.NewTodoItem("abc", true)
 	c2 := unit.NewTodoItem("def", false)
 
@@ -89,7 +83,7 @@ func TestTodo_SetItem(t *testing.T) {
 }
 
 func TestTodo_RemoveItem(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
+	u := unit.NewTodo()
 	c1 := unit.NewTodoItem("abc", true)
 	c2 := unit.NewTodoItem("def", false)
 
@@ -106,7 +100,7 @@ func TestTodo_RemoveItem(t *testing.T) {
 }
 
 func TestTodo_Items(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
+	u := unit.NewTodo()
 	u.SetItems([]unit.TodoItem{
 		unit.NewTodoItem("abc", true),
 		unit.NewTodoItem("def", false)})
@@ -137,40 +131,4 @@ func TestTodoItem_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "abc", i.Data())
 	assert.True(t, i.Done())
-}
-
-func TestTodo_Type(t *testing.T) {
-	assert.Equal(t, unit.TypeTodo, unit.NewTodo("").Type())
-}
-
-func TestTodo_MarshalJSON(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
-	u.SetItems([]unit.TodoItem{
-		unit.NewTodoItem("abc", true),
-		unit.NewTodoItem("def", false)})
-
-	bytes, err := json.Marshal(u)
-	assert.NoError(t, err)
-	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s", "title": "MyUnit", "type":"todo", "items":[{"data": "abc", "done": true},{"data": "def", "done": false}]}`, u.ID()), string(bytes))
-}
-
-func TestTodo_UnmarshalJSON(t *testing.T) {
-	u := unit.NewTodo("MyUnit")
-
-	err := json.Unmarshal([]byte(`{"id": "123", "title": "MyUnit", "type":"todo", "items":[{"data": "abc", "done": true},{"data": "def", "done": false}]}`), &u)
-	assert.NoError(t, err)
-	assert.Equal(t, "123", u.ID())
-	assert.Equal(t, "MyUnit", u.Title())
-	assert.Equal(t, unit.TypeTodo, u.Type())
-
-	items := u.Items()
-	assert.Len(t, items, 2)
-
-	tmp := items[0]
-	assert.Equal(t, "abc", tmp.Data())
-	assert.Equal(t, true, tmp.Done())
-
-	tmp = items[1]
-	assert.Equal(t, "def", tmp.Data())
-	assert.Equal(t, false, tmp.Done())
 }

@@ -13,12 +13,6 @@ type Todo interface {
 	RemoveItem(index int)
 }
 
-// baseTodo represents default implementation of Todo interface
-type baseTodo struct {
-	baseUnit
-	items []TodoItem
-}
-
 // TodoItem represents single item which can have some string data and done status
 type TodoItem interface {
 	Data() string
@@ -27,54 +21,24 @@ type TodoItem interface {
 	SetDone(done bool)
 }
 
+// baseTodo represents default implementation of Todo interface
+type baseTodo struct {
+	baseUnit
+	items []TodoItem
+}
+
 // baseTodo represents default implementation of TodoItem interface
 type baseTodoItem struct {
-	TodoItem
 	data string
 	done bool
 }
 
-// NewTodo creates new Todo unit with given title
-func NewTodo(title string) Todo {
-	return &baseTodo{baseUnit: *newBaseUnit(title)}
-}
-
-// Items returns unit child items
-func (u *baseTodo) Items() []TodoItem {
-	return u.items
-}
-
-// SetItems sets unit child items
-func (u *baseTodo) SetItems(items []TodoItem) {
-	u.items = items
-}
-
-// AddItem adds new child item to the unit
-func (u *baseTodo) AddItem(item TodoItem) {
-	u.items = append(u.items, item)
-}
-
-// GetItem returns child item with given index
-func (u *baseTodo) GetItem(index int) TodoItem {
-	return u.items[index]
-}
-
-// SetItem sets child item with given index to new item
-func (u *baseTodo) SetItem(index int, item TodoItem) {
-	u.items[index] = item
-}
-
-// RemoveItem removes child item with given index
-func (u *baseTodo) RemoveItem(index int) {
-	u.items = append(u.items[:index], u.items[index+1:]...)
-}
-
-func (u *baseTodo) Type() Type {
-	return TypeTodo
-}
-
 // NewTodoItem creates new TodoItem with given data and status
 func NewTodoItem(data string, done bool) TodoItem {
+	return newBaseTodoItem(data, done)
+}
+
+func newBaseTodoItem(data string, done bool) *baseTodoItem {
 	return &baseTodoItem{data: data, done: done}
 }
 
@@ -86,6 +50,7 @@ func (i *baseTodoItem) Data() string {
 // SetData sets new item
 func (i *baseTodoItem) SetData(data string) {
 	i.data = data
+	//todo:refreshParentUpdated
 }
 
 // Done returns item done status
@@ -96,6 +61,7 @@ func (i *baseTodoItem) Done() bool {
 // SetDone sets new item done status
 func (i *baseTodoItem) SetDone(done bool) {
 	i.done = done
+	//todo:refreshParentUpdated
 }
 
 type baseTodoItemJSON struct {
@@ -104,8 +70,8 @@ type baseTodoItemJSON struct {
 }
 
 func (i *baseTodoItem) fromJSONStruct(j baseTodoItemJSON) error {
-	i.SetData(j.Data)
-	i.SetDone(j.Done)
+	i.data = j.Data
+	i.done = j.Done
 
 	return nil
 }
@@ -125,20 +91,55 @@ func (i *baseTodoItem) UnmarshalJSON(b []byte) error {
 	return i.fromJSONStruct(jsonData)
 }
 
+// NewTodo creates new Todo unit with given title
+func NewTodo() Todo {
+	return newBaseTodo()
+}
+
+func newBaseTodo() *baseTodo {
+	return &baseTodo{baseUnit: *newBaseUnit(TypeTodo)}
+}
+
+// Items returns unit child items
+func (u *baseTodo) Items() []TodoItem {
+	return u.items
+}
+
+// SetItems sets unit child items
+func (u *baseTodo) SetItems(items []TodoItem) {
+	u.items = items
+	u.refreshUpdated()
+}
+
+// AddItem adds new child item to the unit
+func (u *baseTodo) AddItem(item TodoItem) {
+	u.items = append(u.items, item)
+	u.refreshUpdated()
+}
+
+// GetItem returns child item with given index
+func (u *baseTodo) GetItem(index int) TodoItem {
+	return u.items[index]
+}
+
+// SetItem sets child item with given index to new item
+func (u *baseTodo) SetItem(index int, item TodoItem) {
+	u.items[index] = item
+	u.refreshUpdated()
+}
+
+// RemoveItem removes child item with given index
+func (u *baseTodo) RemoveItem(index int) {
+	u.items = append(u.items[:index], u.items[index+1:]...)
+	u.refreshUpdated()
+}
+
 type baseTodoJSON struct {
-	ID    string             `json:"id"`
-	Title string             `json:"title"`
-	Type  Type               `json:"type"`
+	baseUnitJSON
 	Items []baseTodoItemJSON `json:"items"`
 }
 
 func (u *baseTodo) fromJSONStruct(j baseTodoJSON) error {
-	if j.Type != u.Type() {
-		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
-	}
-	u.SetID(j.ID)
-	u.SetTitle(j.Title)
-
 	for _, v := range j.Items {
 		u.AddItem(NewTodoItem(v.Data, v.Done))
 	}
@@ -151,12 +152,20 @@ func (u *baseTodo) MarshalJSON() ([]byte, error) {
 	for _, v := range u.items {
 		items = append(items, baseTodoItemJSON{Data: v.Data(), Done: v.Done()})
 	}
-	return json.Marshal(baseTodoJSON{ID: u.ID(), Title: u.Title(), Type: u.Type(), Items: items})
+	return json.Marshal(baseTodoJSON{
+		baseUnitJSON: baseUnitJSON{ID: u.id, Title: u.title, Type: u.unitType, Created: u.created, Updated: u.updated},
+		Items:        items,
+	})
 }
 
 func (u *baseTodo) UnmarshalJSON(b []byte) error {
+	err := u.baseUnit.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+
 	var jsonData baseTodoJSON
-	err := json.Unmarshal(b, &jsonData)
+	err = json.Unmarshal(b, &jsonData)
 
 	if err != nil {
 		return err
