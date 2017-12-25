@@ -10,7 +10,7 @@ import (
 )
 
 var dummyTime = time.Date(2017, 11, 24, 17, 0, 0, 0, time.Local)
-var dummySecondTime = time.Date(2017, 11, 25, 17, 0, 0, 0, time.Local)
+var dummySecondTime = time.Date(2017, 11, 26, 17, 0, 0, 0, time.Local)
 
 func TestNewMock(t *testing.T) {
 	c := clock.NewMock(dummyTime)
