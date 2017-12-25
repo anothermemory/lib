@@ -20,6 +20,12 @@ func TestNewTextCode(t *testing.T) {
 	assert.Equal(t, unit.TypeTextCode, u.Type())
 }
 
+func TestNewTextCode_Data(t *testing.T) {
+	const data = "data"
+	u := unit.NewTextCode(unit.TextCodeData(data))
+	assert.Equal(t, data, u.Data())
+}
+
 func TestNewTextCode_Language(t *testing.T) {
 	const language = "language"
 	u := unit.NewTextCode(unit.TextCodeLanguage(language))
