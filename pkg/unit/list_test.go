@@ -3,6 +3,9 @@ package unit_test
 import (
 	"testing"
 
+	"encoding/json"
+	"fmt"
+
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
 )
@@ -126,6 +129,51 @@ func TestList_Items(t *testing.T) {
 	i2, ok := tmp.(unit.TextCode)
 	assert.True(t, ok)
 	assert.Equal(t, "MyCode", i2.Title())
+	assert.Equal(t, "def", i2.Data())
+	assert.Equal(t, "PHP", i2.Language())
+}
+
+func TestList_MarshalJSON(t *testing.T) {
+	u := unit.NewList(
+		unit.ClockMock(createdTime, updatedTime),
+		unit.Title("MyUnit"),
+	)
+	c1 := unit.NewTextPlain()
+	c1.SetTitle("MyText")
+	c1.SetData("abc")
+	c2 := unit.NewTextCode()
+	c2.SetTitle("MyCode")
+	c2.SetData("def")
+	c2.SetLanguage("PHP")
+	u.SetItems([]unit.Unit{c1, c2})
+
+	bytes, err := json.Marshal(u)
+	assert.NoError(t, err)
+
+	u1 := toJSON(jsonUnit(c1), jsonTextPlain(c1.Data()))
+	u2 := toJSON(jsonUnit(c2), jsonTextPlain(c2.Data()), jsonTextCode(c2.Language()))
+
+	assert.JSONEq(t, toJSON(jsonUnit(u), fmt.Sprintf(`"items":[%s, %s]`, u1, u2)), string(bytes))
+}
+
+func TestList_UnmarshalJSON(t *testing.T) {
+	u := unit.NewList()
+
+	u1 := toJSON(jsonUnitDummy(unit.TypeTextPlain), jsonTextPlain("abc"))
+	u2 := toJSON(jsonUnitDummy(unit.TypeTextCode), jsonTextPlain("def"), jsonTextCode("PHP"))
+
+	err := json.Unmarshal([]byte(toJSON(jsonUnit(u), fmt.Sprintf(`"items":[%s, %s]`, u1, u2))), &u)
+	assert.NoError(t, err)
+	items := u.Items()
+
+	tmp := items[0]
+	i1, ok := tmp.(unit.TextPlain)
+	assert.True(t, ok)
+	assert.Equal(t, "abc", i1.Data())
+
+	tmp = items[1]
+	i2, ok := tmp.(unit.TextCode)
+	assert.True(t, ok)
 	assert.Equal(t, "def", i2.Data())
 	assert.Equal(t, "PHP", i2.Language())
 }

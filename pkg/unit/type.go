@@ -32,13 +32,13 @@ var typeStrings = map[Type]string{
 	TypeTextCode:     "text_code",
 }
 
-var typeObjects = map[Type]func() Unit{
-	TypeUnit:         func() Unit { return NewUnit() },
-	TypeList:         func() Unit { return NewList() },
-	TypeTodo:         func() Unit { return NewTodo() },
-	TypeTextPlain:    func() Unit { return NewTextPlain() },
-	TypeTextMarkdown: func() Unit { return NewTextMarkdown() },
-	TypeTextCode:     func() Unit { return NewTextCode() },
+var typeObjects = map[Type]func(options ...func(u interface{})) Unit{
+	TypeUnit:         func(options ...func(u interface{})) Unit { return NewUnit(options...) },
+	TypeList:         func(options ...func(u interface{})) Unit { return NewList(options...) },
+	TypeTodo:         func(options ...func(u interface{})) Unit { return NewTodo(options...) },
+	TypeTextPlain:    func(options ...func(u interface{})) Unit { return NewTextPlain(options...) },
+	TypeTextMarkdown: func(options ...func(u interface{})) Unit { return NewTextMarkdown(options...) },
+	TypeTextCode:     func(options ...func(u interface{})) Unit { return NewTextCode(options...) },
 }
 
 // String returns string representation of type
@@ -79,6 +79,6 @@ func (t *Type) UnmarshalJSON(data []byte) error {
 }
 
 // NewObject creates new empty object of given type
-func (t *Type) NewObject() Unit {
-	return typeObjects[*t]()
+func (t *Type) NewObject(options ...func(u interface{})) Unit {
+	return typeObjects[*t](options...)
 }

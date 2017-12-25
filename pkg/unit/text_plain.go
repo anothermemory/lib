@@ -16,12 +16,12 @@ type baseTextPlain struct {
 }
 
 // NewTextPlain creates new TextPlain unit with given title and data
-func NewTextPlain() TextPlain {
-	return newBaseTextPlain()
-}
+func NewTextPlain(options ...func(u interface{})) TextPlain {
+	u := &baseTextPlain{baseUnit: *newBaseUnit(TypeTextPlain)}
+	initUnit(&u.baseUnit, options...)
+	initUnit(u, options...)
 
-func newBaseTextPlain() *baseTextPlain {
-	return &baseTextPlain{baseUnit: *newBaseUnit(TypeTextPlain)}
+	return u
 }
 
 // Data returns unit data
@@ -66,4 +66,13 @@ func (u *baseTextPlain) UnmarshalJSON(b []byte) error {
 	}
 
 	return u.fromJSONStruct(jsonData)
+}
+
+// TextPlainData is an option that sets data for a text plain unit to the provided value
+func TextPlainData(t string) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseTextPlain); converted {
+			o.data = t
+		}
+	}
 }
