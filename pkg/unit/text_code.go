@@ -16,12 +16,14 @@ type baseTextCode struct {
 }
 
 // NewTextCode creates new TextCode unit with given title, data and language
-func NewTextCode() TextCode {
-	return newBaseTextCode()
-}
+func NewTextCode(options ...func(u interface{})) TextCode {
+	u := &baseTextCode{baseTextPlain: baseTextPlain{baseUnit: *newBaseUnit(TypeTextCode)}}
 
-func newBaseTextCode() *baseTextCode {
-	return &baseTextCode{baseTextPlain: baseTextPlain{baseUnit: *newBaseUnit(TypeTextCode)}}
+	initUnit(&u.baseUnit, options...)
+	initUnit(&u.baseTextPlain, options...)
+	initUnit(u, options...)
+
+	return u
 }
 
 // Language returns unit language
@@ -68,4 +70,13 @@ func (u *baseTextCode) UnmarshalJSON(b []byte) error {
 	}
 
 	return u.fromJSONStruct(jsonData)
+}
+
+// TextCodeLanguage is an option that sets language for a text code unit to the provided value
+func TextCodeLanguage(l string) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseTextCode); converted {
+			o.language = l
+		}
+	}
 }

@@ -20,12 +20,13 @@ type baseList struct {
 }
 
 // NewList creates new List unit with given title
-func NewList() List {
-	return newBaseList()
-}
+func NewList(options ...func(u interface{})) List {
+	u := &baseList{baseUnit: *newBaseUnit(TypeList)}
 
-func newBaseList() *baseList {
-	return &baseList{baseUnit: *newBaseUnit(TypeList)}
+	initUnit(&u.baseUnit, options...)
+	initUnit(u, options...)
+
+	return u
 }
 
 // Items returns unit child units

@@ -87,12 +87,13 @@ func (i *baseTodoItem) UnmarshalJSON(b []byte) error {
 }
 
 // NewTodo creates new Todo unit with given title
-func NewTodo() Todo {
-	return newBaseTodo()
-}
+func NewTodo(options ...func(u interface{})) Todo {
+	u := &baseTodo{baseUnit: *newBaseUnit(TypeTodo)}
 
-func newBaseTodo() *baseTodo {
-	return &baseTodo{baseUnit: *newBaseUnit(TypeTodo)}
+	initUnit(&u.baseUnit, options...)
+	initUnit(u, options...)
+
+	return u
 }
 
 func (u *baseTodo) NewItem() TodoItem {

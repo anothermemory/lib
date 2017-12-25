@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/anothermemory/lib/pkg/clock"
-	"github.com/satori/go.uuid"
+	"github.com/anothermemory/lib/pkg/idgen"
 )
 
 // Unit represents simplest unit which actually does nothing but used as a base for all other units
@@ -24,24 +24,34 @@ type Unit interface {
 // baseUnit represents default implementation of Unit interface
 type baseUnit struct {
 	Unit
-	id       string
-	title    string
-	unitType Type
-	created  time.Time
-	updated  time.Time
-	clock    *clock.Clock
+	id          string
+	title       string
+	unitType    Type
+	created     time.Time
+	updated     time.Time
+	clock       clock.Clock
+	idGenerator idgen.Generator
 }
 
 // NewUnit creates new Unit with given title. Unit id is generated automatically
-func NewUnit() Unit {
-	return newBaseUnit(TypeUnit)
+func NewUnit(options ...func(u interface{})) Unit {
+	u := newBaseUnit(TypeUnit)
+	initUnit(u, options...)
+	u.id = u.idGenerator.Generate()
+	t := u.clock.Now()
+	u.created = t
+	u.updated = t
+	return u
 }
 
 func newBaseUnit(unitType Type) *baseUnit {
-	unit := &baseUnit{id: uuid.NewV4().String(), title: "", unitType: unitType}
-	unit.refreshCreated()
-	unit.refreshUpdated()
-	return unit
+	return &baseUnit{idGenerator: idgen.NewUUID(), title: "", unitType: unitType, clock: clock.NewReal()}
+}
+
+func initUnit(u interface{}, options ...func(u interface{})) {
+	for _, option := range options {
+		option(u)
+	}
 }
 
 // ID returns unit id
@@ -70,10 +80,6 @@ func (u *baseUnit) Created() time.Time {
 
 func (u *baseUnit) Updated() time.Time {
 	return u.updated
-}
-
-func (u *baseUnit) refreshCreated() {
-	u.created = u.clock.Now()
 }
 
 func (u *baseUnit) refreshUpdated() {
@@ -113,4 +119,49 @@ func (u *baseUnit) UnmarshalJSON(b []byte) error {
 	}
 
 	return u.fromJSONStruct(jsonData)
+}
+
+// IDGeneratorUUID is an option that sets internal UUID generator for a unit to UUID implementation
+func IDGeneratorUUID() func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.idGenerator = idgen.NewUUID()
+		}
+	}
+}
+
+// IDGeneratorMock is an option that sets internal UUID generator for a unit to return same value each time
+func IDGeneratorMock(id string) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.idGenerator = idgen.NewMock(id)
+		}
+	}
+}
+
+// ClockReal is an option that sets internal clock for a unit to return real time
+func ClockReal() func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.clock = clock.NewReal()
+		}
+	}
+}
+
+// ClockMock is an option that sets internal clock for a unit to return mocked values
+func ClockMock(t ...time.Time) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.clock = clock.NewMock(t...)
+		}
+	}
+}
+
+// Title is an option that sets title for a unit to the provided value
+func Title(t string) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.title = t
+		}
+	}
 }
