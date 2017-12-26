@@ -36,11 +36,9 @@ type baseUnit struct {
 // NewUnit creates new Unit with given title. Unit id is generated automatically
 func NewUnit(options ...func(u interface{})) Unit {
 	u := newBaseUnit(TypeUnit)
-	initUnit(u, options...)
-	u.id = u.idGenerator.Generate()
-	t := u.clock.Now()
-	u.created = t
-	u.updated = t
+	initUnitOptions(u, options...)
+	initUnit(u)
+
 	return u
 }
 
@@ -48,7 +46,14 @@ func newBaseUnit(unitType Type) *baseUnit {
 	return &baseUnit{idGenerator: idgen.NewUUID(), title: "", unitType: unitType, clock: clock.NewReal()}
 }
 
-func initUnit(u interface{}, options ...func(u interface{})) {
+func initUnit(u *baseUnit) {
+	u.id = u.idGenerator.Generate()
+	t := u.clock.Now()
+	u.created = t
+	u.updated = t
+}
+
+func initUnitOptions(u interface{}, options ...func(u interface{})) {
 	for _, option := range options {
 		option(u)
 	}

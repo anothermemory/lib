@@ -19,9 +19,10 @@ type baseTextCode struct {
 func NewTextCode(options ...func(u interface{})) TextCode {
 	u := &baseTextCode{baseTextPlain: baseTextPlain{baseUnit: *newBaseUnit(TypeTextCode)}}
 
-	initUnit(&u.baseUnit, options...)
-	initUnit(&u.baseTextPlain, options...)
-	initUnit(u, options...)
+	initUnitOptions(&u.baseUnit, options...)
+	initUnitOptions(&u.baseTextPlain, options...)
+	initUnitOptions(u, options...)
+	initUnit(&u.baseUnit)
 
 	return u
 }

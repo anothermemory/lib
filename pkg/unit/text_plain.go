@@ -18,8 +18,9 @@ type baseTextPlain struct {
 // NewTextPlain creates new TextPlain unit with given title and data
 func NewTextPlain(options ...func(u interface{})) TextPlain {
 	u := &baseTextPlain{baseUnit: *newBaseUnit(TypeTextPlain)}
-	initUnit(&u.baseUnit, options...)
-	initUnit(u, options...)
+	initUnitOptions(&u.baseUnit, options...)
+	initUnitOptions(u, options...)
+	initUnit(&u.baseUnit)
 
 	return u
 }

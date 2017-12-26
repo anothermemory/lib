@@ -90,8 +90,9 @@ func (i *baseTodoItem) UnmarshalJSON(b []byte) error {
 func NewTodo(options ...func(u interface{})) Todo {
 	u := &baseTodo{baseUnit: *newBaseUnit(TypeTodo)}
 
-	initUnit(&u.baseUnit, options...)
-	initUnit(u, options...)
+	initUnitOptions(&u.baseUnit, options...)
+	initUnitOptions(u, options...)
+	initUnit(&u.baseUnit)
 
 	return u
 }

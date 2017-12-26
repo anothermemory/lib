@@ -23,8 +23,9 @@ type baseList struct {
 func NewList(options ...func(u interface{})) List {
 	u := &baseList{baseUnit: *newBaseUnit(TypeList)}
 
-	initUnit(&u.baseUnit, options...)
-	initUnit(u, options...)
+	initUnitOptions(&u.baseUnit, options...)
+	initUnitOptions(u, options...)
+	initUnit(&u.baseUnit)
 
 	return u
 }

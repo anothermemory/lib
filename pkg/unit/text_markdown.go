@@ -14,9 +14,10 @@ type baseTextMarkdown struct {
 func NewTextMarkdown(options ...func(u interface{})) TextMarkdown {
 	u := &baseTextMarkdown{baseTextPlain: baseTextPlain{baseUnit: *newBaseUnit(TypeTextMarkdown)}}
 
-	initUnit(&u.baseUnit, options...)
-	initUnit(&u.baseTextPlain, options...)
-	initUnit(u, options...)
+	initUnitOptions(&u.baseUnit, options...)
+	initUnitOptions(&u.baseTextPlain, options...)
+	initUnitOptions(u, options...)
+	initUnit(&u.baseUnit)
 
 	return u
 }
