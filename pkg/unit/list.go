@@ -1,6 +1,10 @@
 package unit
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/pkg/errors"
+)
 
 // List represents unit which contains other units
 type List interface {
@@ -11,23 +15,34 @@ type List interface {
 	GetItem(index int) Unit
 	SetItem(index int, item Unit)
 	RemoveItem(index int)
+	SetMarshalItems(m bool)
+	MarshalItems() bool
 }
 
 // baseList represents default implementation for List interface
 type baseList struct {
 	baseUnit
-	items []Unit
+	marshalItems bool
+	items        []Unit
 }
 
 // NewList creates new List unit with given title
 func NewList(options ...func(u interface{})) List {
-	u := &baseList{baseUnit: *newBaseUnit(TypeList)}
+	u := &baseList{baseUnit: *newBaseUnit(TypeList), marshalItems: true}
 
 	initUnitOptions(&u.baseUnit, options...)
 	initUnitOptions(u, options...)
 	initUnit(&u.baseUnit)
 
 	return u
+}
+
+func (u *baseList) SetMarshalItems(m bool) {
+	u.marshalItems = m
+}
+
+func (u *baseList) MarshalItems() bool {
+	return u.marshalItems
 }
 
 // Items returns unit child units
@@ -73,17 +88,31 @@ type baseListJSON struct {
 	Items []json.RawMessage `json:"items"`
 }
 
+type baseListWithoutItemsJSON struct {
+	baseUnitJSON
+	Items []string `json:"items"`
+}
+
 type baseListItemJSON struct {
 	Type Type `json:"type"`
 }
 
-func (u *baseList) fromJSONStruct(j baseListJSON) error {
+func (u *baseList) fromJSONStructWithItems(j baseListJSON) error {
 	for _, i := range j.Items {
 		item, err := createListItemFromJSON(i)
 		if err != nil {
 			continue
 		}
 		u.AddItem(item)
+	}
+
+	return nil
+}
+
+func (u *baseList) fromJSONStructWithoutItems(j baseListWithoutItemsJSON) error {
+
+	for _, i := range j.Items {
+		u.AddItem(NewUnit(IDGeneratorMock(i)))
 	}
 
 	return nil
@@ -106,12 +135,12 @@ func createListItemFromJSON(j json.RawMessage) (Unit, error) {
 	return i, nil
 }
 
-func (u *baseList) MarshalJSON() ([]byte, error) {
+func (u *baseList) MarshalJSONWithItems() ([]byte, error) {
 	var items []json.RawMessage
 	for _, i := range u.items {
 		ij, err := json.Marshal(i)
 		if err != nil {
-			continue
+			return nil, errors.Wrapf(err, "failed to marshall single list item (ID: %s, Type: %s)", i.ID(), i.Type().String())
 		}
 		items = append(items, json.RawMessage(ij))
 	}
@@ -121,7 +150,7 @@ func (u *baseList) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (u *baseList) UnmarshalJSON(b []byte) error {
+func (u *baseList) UnmarshalJSONWithItems(b []byte) error {
 	err := u.baseUnit.UnmarshalJSON(b)
 	if err != nil {
 		return err
@@ -134,5 +163,55 @@ func (u *baseList) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	return u.fromJSONStruct(jsonData)
+	return u.fromJSONStructWithItems(jsonData)
+}
+
+func (u *baseList) MarshalJSONWithoutItems() ([]byte, error) {
+	var items []string
+	for _, i := range u.items {
+		items = append(items, i.ID())
+	}
+	return json.Marshal(baseListWithoutItemsJSON{
+		baseUnitJSON: baseUnitJSON{ID: u.id, Title: u.title, Type: u.unitType, Created: u.created, Updated: u.updated},
+		Items:        items,
+	})
+}
+
+func (u *baseList) UnmarshalJSONWithoutItems(b []byte) error {
+	err := u.baseUnit.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+
+	var jsonData baseListWithoutItemsJSON
+	err = json.Unmarshal(b, &jsonData)
+
+	if err != nil {
+		return err
+	}
+
+	return u.fromJSONStructWithoutItems(jsonData)
+}
+
+func (u *baseList) MarshalJSON() ([]byte, error) {
+	if u.marshalItems {
+		return u.MarshalJSONWithItems()
+	}
+	return u.MarshalJSONWithoutItems()
+}
+
+func (u *baseList) UnmarshalJSON(b []byte) error {
+	if u.marshalItems {
+		return u.UnmarshalJSONWithItems(b)
+	}
+	return u.UnmarshalJSONWithoutItems(b)
+}
+
+// ListMarshalItems is an option that sets marshalItems flag for a list unit to the provided value
+func ListMarshalItems(m bool) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseList); converted {
+			o.marshalItems = m
+		}
+	}
 }
