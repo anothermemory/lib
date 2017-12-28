@@ -2,9 +2,14 @@ package: github.com/anothermemory/lib
 import:
 - package: github.com/satori/go.uuid
   version: ^1.1.0
-- package: github.com/russross/blackfriday
-  version: ^2.0.0
 - package: github.com/shurcooL/sanitized_anchor_name
+- package: github.com/magefile/mage
+  version: ^2.0.1
+  subpackages:
+  - mg
+  - types
+  - sh
+  - target
 testImport:
 - package: github.com/stretchr/testify
   version: ^1.1.4

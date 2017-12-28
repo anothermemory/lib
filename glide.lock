@@ -1,8 +1,13 @@
-hash: 1a754503a3d723de62f8762b480d89fda78143f324545bc6ffddd2ec99d84371
-updated: 2017-12-10T22:48:38.14599448+02:00
+hash: e550a200b2618e509ba98dd79df7aed6ad8b5220c7a94e7e573956669f663736
+updated: 2017-12-28T12:46:58.051721495+02:00
 imports:
-- name: github.com/russross/blackfriday
-  version: 187c33ff049bddf24fc5c5b82facfdd62813a552
+- name: github.com/magefile/mage
+  version: ab3ca2f6f85577d7ec82e0a6df721147a2e737f9
+  subpackages:
+  - mg
+  - sh
+  - target
+  - types
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/shurcooL/sanitized_anchor_name
