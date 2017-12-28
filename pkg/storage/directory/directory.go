@@ -6,15 +6,25 @@ import (
 	"github.com/anothermemory/lib/pkg/storage"
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
 type directoryStorage struct {
 	rootDir string
+	fs      afero.Fs
+	fsUtil  *afero.Afero
 }
 
 // NewDirectoryStorage creates new storage which uses filesystem to store units
 func NewDirectoryStorage(rootDir string) storage.Storage {
-	return &directoryStorage{rootDir: rootDir}
+	fs := afero.NewOsFs()
+	return &directoryStorage{rootDir: rootDir, fs: fs, fsUtil: &afero.Afero{Fs: fs}}
+}
+
+// NewDirectoryInMemoryStorage creates new storage which uses memory to store units
+func NewDirectoryInMemoryStorage() storage.Storage {
+	fs := afero.NewMemMapFs()
+	return &directoryStorage{rootDir: "/", fs: fs, fsUtil: &afero.Afero{Fs: fs}}
 }
 
 func (s *directoryStorage) RootDir() string {
@@ -44,15 +54,15 @@ func (s *directoryStorage) LoadUnit(id string) (unit.Unit, error) {
 }
 
 func (s *directoryStorage) IsCreated() bool {
-	_, err := os.Stat(s.rootDir)
+	_, err := s.fs.Stat(s.rootDir)
 
 	return err == nil
 }
 
 func (s *directoryStorage) Create() error {
-	return errors.Wrap(os.MkdirAll(s.rootDir, os.ModePerm), "failed to create storage")
+	return errors.Wrap(s.fs.MkdirAll(s.rootDir, os.ModePerm), "failed to create storage")
 }
 
 func (s *directoryStorage) Remove() error {
-	return errors.Wrap(os.RemoveAll(s.rootDir), "failed to remove storage")
+	return errors.Wrap(s.fs.RemoveAll(s.rootDir), "failed to remove storage")
 }

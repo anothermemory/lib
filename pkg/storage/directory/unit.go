@@ -2,10 +2,8 @@ package directory
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 
-	"github.com/anothermemory/lib/pkg/storage"
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/pkg/errors"
 )
@@ -13,14 +11,14 @@ import (
 type persistentUnit struct {
 	unit     unit.Unit
 	location location
-	storage  storage.Storage
+	storage  *directoryStorage
 }
 
-func newPersistentUnitFromUnit(rootDir string, u unit.Unit, s storage.Storage) *persistentUnit {
+func newPersistentUnitFromUnit(rootDir string, u unit.Unit, s *directoryStorage) *persistentUnit {
 	return &persistentUnit{unit: u, location: *newLocation(rootDir, u.ID()), storage: s}
 }
 
-func newPersistentUnitFromID(rootDir string, id string, s storage.Storage) *persistentUnit {
+func newPersistentUnitFromID(rootDir string, id string, s *directoryStorage) *persistentUnit {
 	return &persistentUnit{unit: nil, location: *newLocation(rootDir, id), storage: s}
 }
 
@@ -47,7 +45,7 @@ func (p *persistentUnit) save() error {
 	if nil == p.unit {
 		return errors.New("cannot operate on nil unit")
 	}
-	err := os.MkdirAll(p.location.dirPath, os.ModePerm)
+	err := p.storage.fs.MkdirAll(p.location.dirPath, os.ModePerm)
 	if err != nil {
 		return errors.Wrap(err, "failed to create required directories")
 	}
@@ -64,11 +62,12 @@ func (p *persistentUnit) save() error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshall unit")
 	}
-	return errors.Wrap(ioutil.WriteFile(p.location.fullPath, bytes, os.ModePerm), "failed to write file")
+
+	return errors.Wrap(p.storage.fsUtil.WriteFile(p.location.fullPath, bytes, os.ModePerm), "failed to write file")
 }
 
 func (p *persistentUnit) remove() error {
-	return errors.Wrap(os.Remove(p.location.fullPath), "failed to remove unit")
+	return errors.Wrap(p.storage.fs.Remove(p.location.fullPath), "failed to remove unit")
 }
 
 func disableListItemsMarshal(u unit.Unit) {
@@ -97,7 +96,7 @@ type persistentUnitJSON struct {
 }
 
 func (p *persistentUnit) load() (unit.Unit, error) {
-	data, err := ioutil.ReadFile(p.location.fullPath)
+	data, err := p.storage.fsUtil.ReadFile(p.location.fullPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read unit")
 	}
