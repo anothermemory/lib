@@ -1,5 +1,5 @@
-hash: e550a200b2618e509ba98dd79df7aed6ad8b5220c7a94e7e573956669f663736
-updated: 2017-12-28T12:46:58.051721495+02:00
+hash: c71869296be402e1fa9df81e62e9683243c46ce8a092d20be6925c04fdaed66b
+updated: 2017-12-28T12:48:44.185695329+02:00
 imports:
 - name: github.com/magefile/mage
   version: ab3ca2f6f85577d7ec82e0a6df721147a2e737f9
@@ -8,6 +8,8 @@ imports:
   - sh
   - target
   - types
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/shurcooL/sanitized_anchor_name
