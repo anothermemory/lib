@@ -24,7 +24,7 @@ func NewDirectoryStorage(rootDir string) storage.Storage {
 // NewDirectoryInMemoryStorage creates new storage which uses memory to store units
 func NewDirectoryInMemoryStorage() storage.Storage {
 	fs := afero.NewMemMapFs()
-	return &directoryStorage{rootDir: "/", fs: fs, fsUtil: &afero.Afero{Fs: fs}}
+	return &directoryStorage{rootDir: "/anothermemory", fs: fs, fsUtil: &afero.Afero{Fs: fs}}
 }
 
 func (s *directoryStorage) RootDir() string {
