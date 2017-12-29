@@ -1,13 +1,11 @@
 package unit_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
-
 	"time"
-
-	"encoding/json"
 
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
@@ -48,12 +46,12 @@ func TestNewUnit(t *testing.T) {
 
 func TestNewUnit_MockID(t *testing.T) {
 	const id = "123"
-	u := unit.NewUnit(unit.IDGeneratorMock(id))
+	u := unit.NewUnit(unit.OptionIDGeneratorMock(id))
 	assert.Equal(t, id, u.ID())
 }
 func TestNewUnit_Title(t *testing.T) {
 	const title = "title"
-	u := unit.NewUnit(unit.Title(title))
+	u := unit.NewUnit(unit.OptionTitle(title))
 	assert.Equal(t, title, u.Title())
 }
 
@@ -68,7 +66,7 @@ func TestBaseUnit_Title(t *testing.T) {
 }
 
 func TestBaseUnit_Created(t *testing.T) {
-	u := unit.NewUnit(unit.ClockMock(createdTime, updatedTime))
+	u := unit.NewUnit(unit.OptionClockMock(createdTime, updatedTime))
 
 	assert.Equal(t, createdTime, u.Created())
 
@@ -78,7 +76,7 @@ func TestBaseUnit_Created(t *testing.T) {
 }
 
 func TestBaseUnit_Updated(t *testing.T) {
-	u := unit.NewUnit(unit.ClockMock(createdTime, updatedTime))
+	u := unit.NewUnit(unit.OptionClockMock(createdTime, updatedTime))
 
 	assert.Equal(t, createdTime, u.Updated())
 
@@ -88,7 +86,7 @@ func TestBaseUnit_Updated(t *testing.T) {
 }
 
 func TestBaseUnit_MarshalJSON(t *testing.T) {
-	u := unit.NewUnit(unit.ClockMock(createdTime, updatedTime))
+	u := unit.NewUnit(unit.OptionClockMock(createdTime, updatedTime))
 	u.SetTitle("MyUnit")
 
 	bytes, err := json.Marshal(u)

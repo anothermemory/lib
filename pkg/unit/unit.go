@@ -2,7 +2,6 @@ package unit
 
 import (
 	"encoding/json"
-
 	"time"
 
 	"github.com/anothermemory/lib/pkg/clock"
@@ -126,8 +125,8 @@ func (u *baseUnit) UnmarshalJSON(b []byte) error {
 	return u.fromJSONStruct(jsonData)
 }
 
-// IDGeneratorUUID is an option that sets internal UUID generator for a unit to UUID implementation
-func IDGeneratorUUID() func(u interface{}) {
+// OptionIDGeneratorUUID is an option that sets internal UUID generator for a unit to UUID implementation
+func OptionIDGeneratorUUID() func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseUnit); converted {
 			o.idGenerator = idgen.NewUUID()
@@ -135,8 +134,8 @@ func IDGeneratorUUID() func(u interface{}) {
 	}
 }
 
-// IDGeneratorMock is an option that sets internal UUID generator for a unit to return same value each time
-func IDGeneratorMock(id string) func(u interface{}) {
+// OptionIDGeneratorMock is an option that sets internal UUID generator for a unit to return same value each time
+func OptionIDGeneratorMock(id string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseUnit); converted {
 			o.idGenerator = idgen.NewMock(id)
@@ -144,8 +143,8 @@ func IDGeneratorMock(id string) func(u interface{}) {
 	}
 }
 
-// ClockReal is an option that sets internal clock for a unit to return real time
-func ClockReal() func(u interface{}) {
+// OptionClockReal is an option that sets internal clock for a unit to return real time
+func OptionClockReal() func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseUnit); converted {
 			o.clock = clock.NewReal()
@@ -153,8 +152,8 @@ func ClockReal() func(u interface{}) {
 	}
 }
 
-// ClockMock is an option that sets internal clock for a unit to return mocked values
-func ClockMock(t ...time.Time) func(u interface{}) {
+// OptionClockMock is an option that sets internal clock for a unit to return mocked values
+func OptionClockMock(t ...time.Time) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseUnit); converted {
 			o.clock = clock.NewMock(t...)
@@ -162,8 +161,8 @@ func ClockMock(t ...time.Time) func(u interface{}) {
 	}
 }
 
-// Title is an option that sets title for a unit to the provided value
-func Title(t string) func(u interface{}) {
+// OptionTitle is an option that sets title for a unit to the provided value
+func OptionTitle(t string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseUnit); converted {
 			o.title = t

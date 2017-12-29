@@ -166,8 +166,8 @@ func TestTodoItem_UnmarshalJSON(t *testing.T) {
 
 func TestTodo_MarshalJSON(t *testing.T) {
 	u := unit.NewTodo(
-		unit.ClockMock(createdTime, updatedTime),
-		unit.Title("MyUnit"),
+		unit.OptionClockMock(createdTime, updatedTime),
+		unit.OptionTitle("MyUnit"),
 	)
 	c1 := u.NewItem()
 	c1.SetData("abc")

@@ -69,8 +69,8 @@ func (u *baseTextPlain) UnmarshalJSON(b []byte) error {
 	return u.fromJSONStruct(jsonData)
 }
 
-// TextPlainData is an option that sets data for a text plain unit to the provided value
-func TextPlainData(t string) func(u interface{}) {
+// OptionTextPlainData is an option that sets data for a text plain unit to the provided value
+func OptionTextPlainData(t string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseTextPlain); converted {
 			o.data = t

@@ -112,7 +112,7 @@ func (u *baseList) fromJSONStructWithItems(j baseListJSON) error {
 func (u *baseList) fromJSONStructWithoutItems(j baseListWithoutItemsJSON) error {
 
 	for _, i := range j.Items {
-		u.AddItem(NewUnit(IDGeneratorMock(i)))
+		u.AddItem(NewUnit(OptionIDGeneratorMock(i)))
 	}
 
 	return nil

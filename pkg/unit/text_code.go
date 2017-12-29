@@ -73,8 +73,8 @@ func (u *baseTextCode) UnmarshalJSON(b []byte) error {
 	return u.fromJSONStruct(jsonData)
 }
 
-// TextCodeData is an option that sets data for a text code unit to the provided value
-func TextCodeData(t string) func(u interface{}) {
+// OptionTextCodeData is an option that sets data for a text code unit to the provided value
+func OptionTextCodeData(t string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseTextCode); converted {
 			o.data = t
@@ -82,8 +82,8 @@ func TextCodeData(t string) func(u interface{}) {
 	}
 }
 
-// TextCodeLanguage is an option that sets language for a text code unit to the provided value
-func TextCodeLanguage(l string) func(u interface{}) {
+// OptionTextCodeLanguage is an option that sets language for a text code unit to the provided value
+func OptionTextCodeLanguage(l string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseTextCode); converted {
 			o.language = l

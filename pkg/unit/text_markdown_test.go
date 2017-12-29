@@ -15,15 +15,15 @@ func TestNewTextMarkdown(t *testing.T) {
 
 func TestNewTextMarkdown_Data(t *testing.T) {
 	const data = "data"
-	u := unit.NewTextMarkdown(unit.TextMarkdownData(data))
+	u := unit.NewTextMarkdown(unit.OptionTextMarkdownData(data))
 	assert.Equal(t, data, u.Data())
 }
 
 func TestBaseTextMarkdown_MarshalJSON(t *testing.T) {
 	u := unit.NewTextMarkdown(
-		unit.ClockMock(createdTime, updatedTime),
-		unit.Title("MyUnit"),
-		unit.TextPlainData("abc"),
+		unit.OptionClockMock(createdTime, updatedTime),
+		unit.OptionTitle("MyUnit"),
+		unit.OptionTextPlainData("abc"),
 	)
 
 	bytes, err := json.Marshal(u)

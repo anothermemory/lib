@@ -1,10 +1,9 @@
 package unit_test
 
 import (
-	"testing"
-
 	"encoding/json"
 	"fmt"
+	"testing"
 
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
@@ -22,13 +21,13 @@ func TestNewTextCode(t *testing.T) {
 
 func TestNewTextCode_Data(t *testing.T) {
 	const data = "data"
-	u := unit.NewTextCode(unit.TextCodeData(data))
+	u := unit.NewTextCode(unit.OptionTextCodeData(data))
 	assert.Equal(t, data, u.Data())
 }
 
 func TestNewTextCode_Language(t *testing.T) {
 	const language = "language"
-	u := unit.NewTextCode(unit.TextCodeLanguage(language))
+	u := unit.NewTextCode(unit.OptionTextCodeLanguage(language))
 	assert.Equal(t, language, u.Language())
 }
 
@@ -40,10 +39,10 @@ func TestBaseTextCode_Language(t *testing.T) {
 
 func TestBaseTextCode_MarshalJSON(t *testing.T) {
 	u := unit.NewTextCode(
-		unit.ClockMock(createdTime, updatedTime),
-		unit.Title("MyUnit"),
-		unit.TextPlainData("abc"),
-		unit.TextCodeLanguage("PHP"),
+		unit.OptionClockMock(createdTime, updatedTime),
+		unit.OptionTitle("MyUnit"),
+		unit.OptionTextPlainData("abc"),
+		unit.OptionTextCodeLanguage("PHP"),
 	)
 
 	bytes, err := json.Marshal(u)

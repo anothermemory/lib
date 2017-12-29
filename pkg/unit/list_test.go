@@ -18,10 +18,10 @@ func TestNewList(t *testing.T) {
 func TestNewList_Item(t *testing.T) {
 	u := unit.NewList(
 		unit.OptionListItem(
-			unit.NewTextPlain(unit.Title("Text1"), unit.TextPlainData("Data1")),
+			unit.NewTextPlain(unit.OptionTitle("Text1"), unit.OptionTextPlainData("Data1")),
 		),
 		unit.OptionListItem(
-			unit.NewTextPlain(unit.Title("Text2"), unit.TextPlainData("Data1")),
+			unit.NewTextPlain(unit.OptionTitle("Text2"), unit.OptionTextPlainData("Data1")),
 		),
 	)
 
@@ -148,8 +148,8 @@ func TestList_Items(t *testing.T) {
 
 func TestList_MarshalJSON(t *testing.T) {
 	u := unit.NewList(
-		unit.ClockMock(createdTime, updatedTime),
-		unit.Title("MyUnit"),
+		unit.OptionClockMock(createdTime, updatedTime),
+		unit.OptionTitle("MyUnit"),
 	)
 	c1 := unit.NewTextPlain()
 	c1.SetTitle("MyText")

@@ -1,10 +1,9 @@
 package unit_test
 
 import (
-	"testing"
-
 	"encoding/json"
 	"fmt"
+	"testing"
 
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +22,7 @@ func TestNewTextPlain(t *testing.T) {
 
 func TestNewTextPlain_Data(t *testing.T) {
 	const data = "data"
-	u := unit.NewTextPlain(unit.TextPlainData(data))
+	u := unit.NewTextPlain(unit.OptionTextPlainData(data))
 	assert.Equal(t, data, u.Data())
 }
 
@@ -35,9 +34,9 @@ func TestTextPlain_Data(t *testing.T) {
 
 func TestBaseTextPlain_MarshalJSON(t *testing.T) {
 	u := unit.NewTextPlain(
-		unit.ClockMock(createdTime, updatedTime),
-		unit.Title("MyUnit"),
-		unit.TextPlainData("abc"),
+		unit.OptionClockMock(createdTime, updatedTime),
+		unit.OptionTitle("MyUnit"),
+		unit.OptionTextPlainData("abc"),
 	)
 
 	bytes, err := json.Marshal(u)

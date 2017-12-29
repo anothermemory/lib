@@ -22,8 +22,8 @@ func NewTextMarkdown(options ...func(u interface{})) TextMarkdown {
 	return u
 }
 
-// TextMarkdownData is an option that sets data for a text markdown unit to the provided value
-func TextMarkdownData(t string) func(u interface{}) {
+// OptionTextMarkdownData is an option that sets data for a text markdown unit to the provided value
+func OptionTextMarkdownData(t string) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseTextMarkdown); converted {
 			o.data = t
