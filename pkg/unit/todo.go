@@ -174,3 +174,12 @@ func (u *baseTodo) UnmarshalJSON(b []byte) error {
 
 	return u.fromJSONStruct(jsonData)
 }
+
+// OptionTodoItem is an option that adds new todo item to the unit
+func OptionTodoItem(data string, done bool) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseTodo); converted {
+			o.items = append(o.items, &baseTodoItem{todo: o, data: data, done: done})
+		}
+	}
+}

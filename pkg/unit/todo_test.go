@@ -1,9 +1,8 @@
 package unit_test
 
 import (
-	"testing"
-
 	"encoding/json"
+	"testing"
 
 	"github.com/anothermemory/lib/pkg/unit"
 	"github.com/stretchr/testify/assert"
@@ -29,6 +28,17 @@ func TestBaseTodoItem_Done(t *testing.T) {
 func TestNewTodo(t *testing.T) {
 	u := unit.NewTodo()
 	assert.Equal(t, unit.TypeTodo, u.Type())
+}
+
+func TestNewTodo_Item(t *testing.T) {
+	u := unit.NewTodo(unit.OptionTodoItem("data1", true), unit.OptionTodoItem("data2", false))
+	items := u.Items()
+
+	assert.Equal(t, "data1", items[0].Data())
+	assert.Equal(t, true, items[0].Done())
+
+	assert.Equal(t, "data2", items[1].Data())
+	assert.Equal(t, false, items[1].Done())
 }
 
 func TestTodo_AddItem(t *testing.T) {
