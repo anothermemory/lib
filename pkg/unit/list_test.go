@@ -15,6 +15,20 @@ func TestNewList(t *testing.T) {
 	assert.Len(t, u.Items(), 0)
 }
 
+func TestNewList_Item(t *testing.T) {
+	u := unit.NewList(
+		unit.OptionListItem(
+			unit.NewTextPlain(unit.Title("Text1"), unit.TextPlainData("Data1")),
+		),
+		unit.OptionListItem(
+			unit.NewTextPlain(unit.Title("Text2"), unit.TextPlainData("Data1")),
+		),
+	)
+
+	assert.Equal(t, "Text1", u.Items()[0].Title())
+	assert.Equal(t, "Text2", u.Items()[1].Title())
+}
+
 func TestList_AddItem(t *testing.T) {
 	u := unit.NewList()
 

@@ -215,3 +215,12 @@ func ListMarshalItems(m bool) func(u interface{}) {
 		}
 	}
 }
+
+// OptionListItem is an option that adds new item to the list unit
+func OptionListItem(item Unit) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseList); converted {
+			o.items = append(o.items, item)
+		}
+	}
+}
