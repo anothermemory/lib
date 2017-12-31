@@ -51,3 +51,10 @@ func TestBaseTextPlain_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "abc", u.Data())
 }
+
+func TestBaseTextPlain_UnmarshalJSON_MalformedJSON(t *testing.T) {
+	u := unit.NewTextPlain()
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
+}

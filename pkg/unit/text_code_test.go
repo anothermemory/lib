@@ -57,3 +57,10 @@ func TestBaseTextCode_UnmarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "PHP", u.Language())
 }
+
+func TestBaseTextCode_UnmarshalJSON_MalformedJSON(t *testing.T) {
+	u := unit.NewTextCode()
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
+}

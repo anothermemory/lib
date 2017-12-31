@@ -164,6 +164,13 @@ func TestTodoItem_UnmarshalJSON(t *testing.T) {
 	assert.True(t, i.Done())
 }
 
+func TestTodoItem_UnmarshalJSON_MalformedJSON(t *testing.T) {
+	i := unit.NewTodo().NewItem()
+
+	err := json.Unmarshal([]byte("123"), &i)
+	assert.Error(t, err)
+}
+
 func TestTodo_MarshalJSON(t *testing.T) {
 	u := unit.NewTodo(
 		unit.OptionClockMock(createdTime, updatedTime),
@@ -198,4 +205,11 @@ func TestTodo_UnmarshalJSON(t *testing.T) {
 	tmp = items[1]
 	assert.Equal(t, "def", tmp.Data())
 	assert.Equal(t, false, tmp.Done())
+}
+
+func TestTodo_UnmarshalJSON_MalformedJSON(t *testing.T) {
+	u := unit.NewTodo()
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
 }

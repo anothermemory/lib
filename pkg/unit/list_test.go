@@ -97,6 +97,12 @@ func TestList_SetItem(t *testing.T) {
 	assert.Equal(t, "PHP", i2.Language())
 }
 
+func TestOptionListItem(t *testing.T) {
+	u := unit.NewList()
+	u.SetMarshalItems(false)
+	assert.False(t, u.MarshalItems())
+}
+
 func TestList_RemoveItem(t *testing.T) {
 	u := unit.NewList()
 	c1 := unit.NewTextPlain()
@@ -227,4 +233,18 @@ func TestList_UnmarshalJSON_WithoutItems(t *testing.T) {
 	i2, ok := tmp.(unit.Unit)
 	assert.True(t, ok)
 	assert.Equal(t, i2ID, i2.ID())
+}
+
+func TestList_UnmarshalJSON_WithoutItem_MalformedJSON(t *testing.T) {
+	u := unit.NewList(unit.ListMarshalItems(false))
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
+}
+
+func TestList_UnmarshalJSON_WitItem_MalformedJSON(t *testing.T) {
+	u := unit.NewList(unit.ListMarshalItems(true))
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
 }
