@@ -185,7 +185,6 @@ func TestEqual(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			assert.Equal(t, test.result, unit.Equal(test.u1, test.u2))
 			assert.Equal(t, !test.result, unit.NotEqual(test.u1, test.u2))
 		})
