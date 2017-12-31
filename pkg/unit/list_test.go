@@ -198,7 +198,7 @@ func TestList_UnmarshalJSON(t *testing.T) {
 }
 
 func TestList_MarshalJSON_WithoutItems(t *testing.T) {
-	u := unit.NewList(unit.ListMarshalItems(false))
+	u := unit.NewList(unit.OptionListMarshalItems(false))
 	c1 := unit.NewTextPlain()
 	c1.SetTitle("MyText")
 	c1.SetData("abc")
@@ -214,7 +214,7 @@ func TestList_MarshalJSON_WithoutItems(t *testing.T) {
 }
 
 func TestList_UnmarshalJSON_WithoutItems(t *testing.T) {
-	u := unit.NewList(unit.ListMarshalItems(false))
+	u := unit.NewList(unit.OptionListMarshalItems(false))
 	const i1ID = "123"
 	const i2ID = "456"
 
@@ -236,14 +236,14 @@ func TestList_UnmarshalJSON_WithoutItems(t *testing.T) {
 }
 
 func TestList_UnmarshalJSON_WithoutItem_MalformedJSON(t *testing.T) {
-	u := unit.NewList(unit.ListMarshalItems(false))
+	u := unit.NewList(unit.OptionListMarshalItems(false))
 
 	err := json.Unmarshal([]byte("123"), &u)
 	assert.Error(t, err)
 }
 
 func TestList_UnmarshalJSON_WitItem_MalformedJSON(t *testing.T) {
-	u := unit.NewList(unit.ListMarshalItems(true))
+	u := unit.NewList(unit.OptionListMarshalItems(true))
 
 	err := json.Unmarshal([]byte("123"), &u)
 	assert.Error(t, err)

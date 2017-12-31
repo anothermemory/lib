@@ -103,7 +103,7 @@ func (u *baseList) fromJSONStructWithItems(j baseListJSON) error {
 		if err != nil {
 			continue
 		}
-		u.AddItem(item)
+		u.items = append(u.items, item)
 	}
 
 	return nil
@@ -112,7 +112,7 @@ func (u *baseList) fromJSONStructWithItems(j baseListJSON) error {
 func (u *baseList) fromJSONStructWithoutItems(j baseListWithoutItemsJSON) error {
 
 	for _, i := range j.Items {
-		u.AddItem(NewUnit(OptionIDGeneratorMock(i)))
+		u.items = append(u.items, NewUnit(OptionIDGeneratorMock(i)))
 	}
 
 	return nil
@@ -207,8 +207,8 @@ func (u *baseList) UnmarshalJSON(b []byte) error {
 	return u.UnmarshalJSONWithoutItems(b)
 }
 
-// ListMarshalItems is an option that sets marshalItems flag for a list unit to the provided value
-func ListMarshalItems(m bool) func(u interface{}) {
+// OptionListMarshalItems is an option that sets marshalItems flag for a list unit to the provided value
+func OptionListMarshalItems(m bool) func(u interface{}) {
 	return func(u interface{}) {
 		if o, converted := u.(*baseList); converted {
 			o.marshalItems = m
