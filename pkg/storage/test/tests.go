@@ -90,6 +90,10 @@ var tests = []struct {
 				l, e := s.LoadUnit(u.ID())
 				is.NoError(e)
 				is.True(unit.Equal(u, l))
+				is.NoError(s.RemoveUnit(l))
+				r, e := s.LoadUnit(l.ID())
+				is.Error(e)
+				is.Nil(r)
 			})
 		}
 	}},
@@ -128,5 +132,9 @@ var tests = []struct {
 		l, e := s.LoadUnit(unitList.ID())
 		is.NoError(e)
 		is.True(unit.Equal(unitList, l))
+		is.NoError(s.RemoveUnit(l))
+		r, e := s.LoadUnit(l.ID())
+		is.Error(e)
+		is.Nil(r)
 	}},
 }
