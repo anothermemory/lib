@@ -162,6 +162,15 @@ func OptionClockMock(t ...time.Time) func(u interface{}) {
 	}
 }
 
+// OptionClockMockPartial is an option that sets internal clock for a unit to return mocked value once
+func OptionClockMockPartial(t ...time.Time) func(u interface{}) {
+	return func(u interface{}) {
+		if o, converted := u.(*baseUnit); converted {
+			o.clock = clock.NewMockPartial(t...)
+		}
+	}
+}
+
 // OptionTitle is an option that sets title for a unit to the provided value
 func OptionTitle(t string) func(u interface{}) {
 	return func(u interface{}) {
