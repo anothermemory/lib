@@ -6,6 +6,7 @@ import (
 
 	"github.com/anothermemory/lib/pkg/clock"
 	"github.com/anothermemory/lib/pkg/idgen"
+	"github.com/pkg/errors"
 )
 
 // Unit represents simplest unit which actually does nothing but used as a base for all other units
@@ -100,7 +101,7 @@ type baseUnitJSON struct {
 
 func (u *baseUnit) fromJSONStruct(j baseUnitJSON) error {
 	if j.Type != u.Type() {
-		return JSONTypeError{Expected: u.Type(), Actual: j.Type}
+		return errors.Errorf("Unexpected unit type in json data received. Expected: %s, Actual: %s", u.Type(), j.Type)
 	}
 	u.id = j.ID
 	u.created = j.Created
