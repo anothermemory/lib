@@ -109,9 +109,8 @@ func (p *persistentUnit) load() (unit.Unit, error) {
 
 	if uj.Type == unit.TypeList {
 		return p.loadList(data)
-	} else {
-		return p.loadNotList(uj.Type, data)
 	}
+	return p.loadNotList(uj.Type, data)
 }
 
 func (p *persistentUnit) loadList(data []byte) (unit.Unit, error) {

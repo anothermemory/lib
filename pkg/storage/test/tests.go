@@ -14,8 +14,6 @@ type CreateFunc func() storage.Storage
 // Func represents test function for single test-case
 type Func func(t *testing.T, c CreateFunc, is *assert.Assertions)
 
-type UnitFunc func() unit.Unit
-
 // RunStorageTests performs full test run for all test-cases for given storage
 func RunStorageTests(t *testing.T, c CreateFunc) {
 	for _, test := range tests {
