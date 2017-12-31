@@ -49,6 +49,14 @@ func TestNewUnit_MockID(t *testing.T) {
 	u := unit.NewUnit(unit.OptionIDGeneratorMock(id))
 	assert.Equal(t, id, u.ID())
 }
+func TestNewUnit_UUIDID(t *testing.T) {
+	assert.NotEqual(t, unit.NewUnit(unit.OptionIDGeneratorUUID()), unit.NewUnit(unit.OptionIDGeneratorUUID()))
+}
+func TestNewUnit_ClockReal(t *testing.T) {
+	u := unit.NewUnit(unit.OptionClockReal())
+	assert.NotNil(t, u.Created())
+	assert.NotNil(t, u.Updated())
+}
 func TestNewUnit_Title(t *testing.T) {
 	const title = "title"
 	u := unit.NewUnit(unit.OptionTitle(title))
@@ -104,4 +112,17 @@ func TestBaseUnit_UnmarshalJSON(t *testing.T) {
 	assert.Equal(t, unit.TypeUnit, u.Type())
 	assert.Equal(t, createdTime, u.Created())
 	assert.Equal(t, updatedTime, u.Updated())
+}
+
+func TestBaseUnit_UnmarshalJSON_MalformedJSON(t *testing.T) {
+	u := unit.NewUnit()
+
+	err := json.Unmarshal([]byte("123"), &u)
+	assert.Error(t, err)
+}
+func TestBaseUnit_UnmarshalJSON_UnexpectedType(t *testing.T) {
+	u := unit.NewUnit()
+
+	err := json.Unmarshal([]byte(toJSON(jsonUnitDummy(unit.TypeTextPlain))), &u)
+	assert.Error(t, err)
 }
