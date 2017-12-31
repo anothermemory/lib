@@ -142,7 +142,7 @@ type baseTodoJSON struct {
 
 func (u *baseTodo) fromJSONStruct(j baseTodoJSON) error {
 	for _, v := range j.Items {
-		u.AddItem(&baseTodoItem{todo: u, data: v.Data, done: v.Done})
+		u.items = append(u.items, &baseTodoItem{todo: u, data: v.Data, done: v.Done})
 	}
 
 	return nil
