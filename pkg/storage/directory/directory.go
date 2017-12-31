@@ -35,6 +35,9 @@ func (s *directoryStorage) SaveUnit(u unit.Unit) error {
 	if !s.IsCreated() {
 		return errors.New("storage is not created yet and cannot be used")
 	}
+	if nil == u {
+		return errors.New("cannot operate on nil unit")
+	}
 	return newPersistentUnitFromUnit(s.rootDir, u, s).save()
 }
 
@@ -42,13 +45,18 @@ func (s *directoryStorage) RemoveUnit(u unit.Unit) error {
 	if !s.IsCreated() {
 		return errors.New("storage is not created yet and cannot be used")
 	}
-
+	if nil == u {
+		return errors.New("cannot operate on nil unit")
+	}
 	return newPersistentUnitFromUnit(s.rootDir, u, s).remove()
 }
 
 func (s *directoryStorage) LoadUnit(id string) (unit.Unit, error) {
 	if !s.IsCreated() {
 		return nil, errors.New("storage is not created yet and cannot be used")
+	}
+	if len(id) == 0 {
+		return nil, errors.New("cannot operate on nil unit")
 	}
 	return newPersistentUnitFromID(s.rootDir, id, s).load()
 }

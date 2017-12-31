@@ -137,4 +137,21 @@ var tests = []struct {
 		is.Error(e)
 		is.Nil(r)
 	}},
+	{"Nil unit cannot be saved", func(t *testing.T, c CreateFunc, is *assert.Assertions) {
+		s := c()
+		is.NoError(s.Create())
+		is.Error(s.SaveUnit(nil))
+	}},
+	{"Nil unit cannot be removed", func(t *testing.T, c CreateFunc, is *assert.Assertions) {
+		s := c()
+		is.NoError(s.Create())
+		is.Error(s.RemoveUnit(nil))
+	}},
+	{"Empty ID cannot be used to load unit", func(t *testing.T, c CreateFunc, is *assert.Assertions) {
+		s := c()
+		is.NoError(s.Create())
+		l, e := s.LoadUnit("")
+		is.Error(e)
+		is.Nil(l)
+	}},
 }
