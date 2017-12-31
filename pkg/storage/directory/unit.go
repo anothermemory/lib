@@ -107,12 +107,24 @@ func (p *persistentUnit) load() (unit.Unit, error) {
 		return nil, errors.Wrap(err, "failed to unmarshal unit type")
 	}
 
-	u := uj.Type.NewObject()
-	disableListItemsMarshal(u)
+	if uj.Type == unit.TypeList {
+		return p.loadList(data)
+	} else {
+		return p.loadNotList(uj.Type, data)
+	}
+}
 
+func (p *persistentUnit) loadList(data []byte) (unit.Unit, error) {
+	baseList := unit.NewList()
+	err := json.Unmarshal(data, &baseList)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal list unit base data to get updated value")
+	}
+
+	u := unit.NewList(unit.OptionListMarshalItems(false), unit.OptionClockMockPartial(baseList.Updated(), baseList.Updated()))
 	err = json.Unmarshal(data, &u)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to unmarshal unit")
+		return nil, errors.Wrap(err, "failed to unmarshal list unit")
 	}
 
 	err = p.loadListItems(u)
@@ -120,5 +132,14 @@ func (p *persistentUnit) load() (unit.Unit, error) {
 		return nil, errors.Wrap(err, "failed to load list unit items")
 	}
 
+	return u, nil
+}
+
+func (p *persistentUnit) loadNotList(t unit.Type, data []byte) (unit.Unit, error) {
+	u := t.NewObject()
+	err := json.Unmarshal(data, &u)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal unit")
+	}
 	return u, nil
 }
