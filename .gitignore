@@ -56,3 +56,4 @@ output
 
 vendor
 coverage.out
+roveralls.coverprofile
