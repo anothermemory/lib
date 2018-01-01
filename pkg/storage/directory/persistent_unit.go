@@ -11,15 +11,11 @@ import (
 type persistentUnit struct {
 	unit     unit.Unit
 	location location
-	storage  *directoryStorage
+	storage  persistentUnitStorage
 }
 
-func newPersistentUnitFromUnit(rootDir string, u unit.Unit, s *directoryStorage) *persistentUnit {
-	return &persistentUnit{unit: u, location: *newLocation(rootDir, u.ID()), storage: s}
-}
-
-func newPersistentUnitFromID(rootDir string, id string, s *directoryStorage) *persistentUnit {
-	return &persistentUnit{unit: nil, location: *newLocation(rootDir, id), storage: s}
+func newPersistentUnit(u unit.Unit, l location, s persistentUnitStorage) *persistentUnit {
+	return &persistentUnit{unit: u, location: l, storage: s}
 }
 
 func (p *persistentUnit) marshalUnit(u unit.Unit) ([]byte, error) {
@@ -45,29 +41,29 @@ func (p *persistentUnit) save() error {
 	if nil == p.unit {
 		return errors.New("cannot operate on nil unit")
 	}
-	err := p.storage.fs.MkdirAll(p.location.dirPath, os.ModePerm)
+	err := p.storage.mkdirAll(p.location.dirPath, os.ModePerm)
 	if err != nil {
 		return errors.Wrap(err, "failed to create required directories")
 	}
 
 	var bytes []byte
 
-	switch s := p.unit.(type) {
-	case unit.List:
-		bytes, err = p.marshalListUnit(s)
+	switch p.unit.Type() {
+	case unit.TypeList:
+		bytes, err = p.marshalListUnit(p.unit.(unit.List))
 	default:
-		bytes, err = p.marshalUnit(s)
+		bytes, err = p.marshalUnit(p.unit)
 	}
 
 	if err != nil {
 		return errors.Wrap(err, "failed to marshall unit")
 	}
 
-	return errors.Wrap(p.storage.fsUtil.WriteFile(p.location.fullPath, bytes, os.ModePerm), "failed to write file")
+	return errors.Wrap(p.storage.writeFile(p.location.fullPath, bytes, os.ModePerm), "failed to write file")
 }
 
 func (p *persistentUnit) remove() error {
-	return errors.Wrap(p.storage.fs.Remove(p.location.fullPath), "failed to remove unit")
+	return errors.Wrap(p.storage.removeDir(p.location.fullPath), "failed to remove unit")
 }
 
 func disableListItemsMarshal(u unit.Unit) {
@@ -96,7 +92,7 @@ type persistentUnitJSON struct {
 }
 
 func (p *persistentUnit) load() (unit.Unit, error) {
-	data, err := p.storage.fsUtil.ReadFile(p.location.fullPath)
+	data, err := p.storage.readFile(p.location.fullPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read unit")
 	}
