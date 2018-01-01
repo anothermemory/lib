@@ -55,3 +55,4 @@ fabric.properties
 output
 
 vendor
+coverage.out
